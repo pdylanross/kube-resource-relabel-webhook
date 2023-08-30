@@ -11,10 +11,3 @@ runs:
     - uses: actions/setup-go@v4
       with:
         go-version: ${{ inputs.go-version }}
-    - uses: actions/cache@v3
-      with:
-        path: |
-          ~/go/pkg/mod
-          ~/.cache/go-build
-        key: ${{ runner.os }}-go-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
-        restore-keys: ${{ runner.os }}-go-${{ inputs.go-version }}-
