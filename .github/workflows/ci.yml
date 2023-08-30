@@ -9,8 +9,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: Setup
         uses: ./.github/actions/setup-golang
-        with:
-          go-version: "1.21"
       - name: lint
         uses: ./.github/actions/lint
 
@@ -20,7 +18,5 @@ jobs:
       - uses: actions/checkout@v3
       - name: Setup
         uses: ./.github/actions/setup-golang
-        with:
-          go-version: "1.21"
       - name: unit-test
         uses: ./.github/actions/unit-test
