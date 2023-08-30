@@ -1,0 +1,20 @@
+name: Setup Golang
+description: Setup golang and get cached files
+inputs:
+  go-version:
+    default: "1.21"
+    description: The go version to use
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@v3
+      with:
+        go-version: ${{ inputs.go-version }}
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: ${{ runner.os }}-go-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
+        restore-keys: ${{ runner.os }}-go-${{ inputs.go-version }}-
