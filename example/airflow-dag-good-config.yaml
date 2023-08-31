@@ -1,0 +1,11 @@
+relabel:
+  - name: "airflow-k8s-pod-operator-do-not-evict"
+    conditions:
+      - type: has-label
+        value:
+          keys:
+            - dag_id
+    actions:
+      - type: ensure-annotation
+        value:
+          karpenter.sh/do-not-evict: "true"

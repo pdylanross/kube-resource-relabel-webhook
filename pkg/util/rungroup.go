@@ -9,6 +9,7 @@ import (
 	"github.com/oklog/run"
 )
 
+// MakeRunGroup creates a new rungroup and registers a SIGTERM and SIGINT handler to it.
 func MakeRunGroup() *run.Group {
 	var rg run.Group
 

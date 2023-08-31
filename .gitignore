@@ -20,4 +20,8 @@
 # Go workspace file
 go.work
 
+# IDEs
 .idea
+
+# Local Development Files
+local

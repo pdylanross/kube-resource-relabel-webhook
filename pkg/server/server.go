@@ -7,23 +7,40 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Depado/ginprom"
+
 	"github.com/gin-gonic/gin"
 	"github.com/oklog/run"
 	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/config"
 )
 
-type Server interface {
-	Start(group *run.Group)
+type internalServerConfig struct {
+	ListenAddress string
+	TLS           *config.ServerTLSConfig
+
+	FriendlyName string
+	SetupFunc    func(router *gin.Engine) error
+	Prometheus   *ginprom.Prometheus
+}
+
+func newInternalServerConfigFrom(cfg *config.ServerConfig, friendlyName string, setupFunc func(router *gin.Engine) error, prometheus *ginprom.Prometheus) internalServerConfig {
+	return internalServerConfig{
+		ListenAddress: cfg.ListenAddress,
+		TLS:           cfg.TLS,
+		FriendlyName:  friendlyName,
+		SetupFunc:     setupFunc,
+		Prometheus:    prometheus,
+	}
 }
 
 type server struct {
 	srv    http.Server
 	logger *slog.Logger
 
-	config *config.ServerConfig
+	config internalServerConfig
 }
 
-func (s *server) Start(group *run.Group) {
+func (s *server) start(group *run.Group) {
 	group.Add(func() error {
 		return s.beginListener()
 	}, func(err error) {
@@ -54,10 +71,11 @@ func (s *server) beginListener() error {
 	return s.srv.ListenAndServe()
 }
 
-func NewServer(config *config.ServerConfig, logger *slog.Logger) (Server, error) {
+func newServer(config internalServerConfig, logger *slog.Logger) (*server, error) {
 	serverLogger := logger.WithGroup("server").With(slog.String("server_name", config.FriendlyName))
 
 	srv := gin.New()
+	srv.Use(config.Prometheus.Instrument())
 	srv.Use(ginLogger(serverLogger))
 	srv.Use(gin.Recovery())
 

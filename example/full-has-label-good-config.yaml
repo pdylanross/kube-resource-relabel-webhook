@@ -1,0 +1,15 @@
+relabel:
+  - name: "full-has-label"
+    conditions:
+      - type: has-label
+        value:
+          keys:
+            - test1
+          values:
+            - test2
+          match:
+            thing: two
+    actions:
+      - type: ensure-annotation
+        value:
+          the-stuff: goes-here

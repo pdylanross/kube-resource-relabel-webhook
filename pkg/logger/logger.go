@@ -9,6 +9,7 @@ import (
 	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/config"
 )
 
+// BuildLogger creates a log/slog logger from the given log config.
 func BuildLogger(cfg *config.LoggerConfig) (*slog.Logger, error) {
 	opts, err := buildHandlerOptions(cfg)
 	if err != nil {

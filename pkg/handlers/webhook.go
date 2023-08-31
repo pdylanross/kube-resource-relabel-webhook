@@ -2,9 +2,13 @@ package handlers
 
 import "github.com/gin-gonic/gin"
 
+// WebhookHandlers encapsulates properties required to setup webhook http handlers.
 type WebhookHandlers struct {
 }
 
-func (rh *WebhookHandlers) SetupWebhookHandlers(_ *gin.Engine) error {
+// SetupWebhookHandlers registers webhook related http handlers.
+func (rh *WebhookHandlers) SetupWebhookHandlers(router *gin.Engine) error {
+	setupHealthHandlers(router)
+
 	return nil
 }
