@@ -10,6 +10,6 @@ relabel:
           match:
             thing: two
     actions:
-      - type: ensure-annotation
+      - type: ensure-label
         value:
           the-stuff: goes-here
