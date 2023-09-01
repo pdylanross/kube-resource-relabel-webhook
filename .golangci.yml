@@ -1,11 +1,5 @@
----
-
 run:
-  skip-dirs:
-    - test/integration/crd
-
-  build-tags:
-    - integration
+  timeout: 10m
 
 linters:
   enable:
@@ -14,3 +8,5 @@ linters:
     - revive
     - gofmt
     - godot
+    - whitespace
+    - dupword

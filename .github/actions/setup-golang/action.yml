@@ -5,9 +5,13 @@ inputs:
     default: "1.21"
     description: The go version to use
     required: true
+  cache:
+    default: true
+    description: if setup-go should cache
 runs:
   using: composite
   steps:
     - uses: actions/setup-go@v4
       with:
         go-version: ${{ inputs.go-version }}
+        cache: ${{ inputs.cache }}

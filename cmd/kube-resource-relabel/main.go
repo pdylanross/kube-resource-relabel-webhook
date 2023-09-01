@@ -109,5 +109,4 @@ func main() {
 	if err := ctx.Run(&globals); err != nil {
 		ctx.Errorf("err: %s", err)
 	}
-
 }
