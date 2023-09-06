@@ -1,6 +1,7 @@
 package relabel
 
 import (
+	"gomodules.xyz/jsonpatch/v3"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -17,7 +18,7 @@ type ConditionConfig interface {
 
 // Action applies a change to an object.
 type Action interface {
-	Update(obj metaV1.Object)
+	Update(obj metaV1.Object) []jsonpatch.Operation
 }
 
 // ActionConfig is a config object that can construct an action.
@@ -35,18 +36,19 @@ type Rule struct {
 
 // Evaluate a k8s object against this rule
 // return if the object was modified.
-func (r *Rule) Evaluate(obj metaV1.Object) bool {
+func (r *Rule) Evaluate(obj metaV1.Object) []jsonpatch.Operation {
 	for _, c := range r.Conditions {
 		if !c.Satisfies(obj) {
-			return false
+			return []jsonpatch.Operation{}
 		}
 	}
 
-	modified := false
+	var operations []jsonpatch.Operation
+
 	for _, a := range r.Actions {
-		a.Update(obj)
-		modified = true
+		newPatches := a.Update(obj)
+		operations = append(operations, newPatches...)
 	}
 
-	return modified
+	return operations
 }

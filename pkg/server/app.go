@@ -1,7 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"log/slog"
+	"os"
+
+	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/mutation"
+	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
+	"gopkg.in/yaml.v3"
 
 	"github.com/Depado/ginprom"
 	"github.com/gin-gonic/gin"
@@ -27,11 +33,14 @@ func (k *kubeRelabelApp) Run() error {
 
 	l.Info("server startup", slog.Any("config", k.config))
 
+	mutator, err := k.buildMutator(l)
+	util.ErrCheck(err)
+
 	prom := ginprom.New(
 		ginprom.Ignore("/metrics"),
 	)
 	metricsHandlers := &handlers.MetricsHandlers{Prometheus: prom}
-	webhookHandlers := &handlers.WebhookHandlers{}
+	webhookHandlers := handlers.NewWebhookHandlers(l, mutator)
 
 	gin.SetMode(gin.ReleaseMode)
 	rg := util.MakeRunGroup()
@@ -53,6 +62,26 @@ func (k *kubeRelabelApp) Run() error {
 	}
 
 	return rg.Run()
+}
+
+func (k *kubeRelabelApp) buildMutator(logger *slog.Logger) (*mutation.Mutator, error) {
+	buf, err := os.ReadFile(k.config.RelabelConfigFile)
+	if err != nil {
+		return nil, fmt.Errorf("err reading relabel config %w", err)
+	}
+
+	var cfg config.RelabelConfig
+	err = yaml.Unmarshal(buf, &cfg)
+	if err != nil {
+		return nil, fmt.Errorf("err deserializing relabel config %w", err)
+	}
+
+	rules, err := cfg.ToRules()
+	if err != nil {
+		return nil, fmt.Errorf("err building rules %w", err)
+	}
+
+	return mutation.NewMutator(relabel.NewRelabeler(rules), logger), nil
 }
 
 // NewRelabelApp creates a relabeling app from a given config.

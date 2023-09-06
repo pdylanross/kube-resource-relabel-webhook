@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/relabel"
+	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"

@@ -3,9 +3,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/relabel/conditions"
-
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/relabel"
+	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
+	conditions2 "github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel/conditions"
 )
 
 func (act *RelabelConfigRuleCondition) GetConcrete() (relabel.ConditionConfig, error) {
@@ -34,7 +33,7 @@ type HasLabelCondition struct {
 }
 
 func (h *HasLabelCondition) ToCondition() relabel.Condition {
-	return conditions.NewHasLabelCondition(h.Keys, h.Values, h.Match)
+	return conditions2.NewHasLabelCondition(h.Keys, h.Values, h.Match)
 }
 
 // HasAnnotationCondition checks existence of annotations.
@@ -48,5 +47,5 @@ type HasAnnotationCondition struct {
 }
 
 func (h *HasAnnotationCondition) ToCondition() relabel.Condition {
-	return conditions.NewHasAnnotationCondition(h.Keys, h.Values, h.Match)
+	return conditions2.NewHasAnnotationCondition(h.Keys, h.Values, h.Match)
 }

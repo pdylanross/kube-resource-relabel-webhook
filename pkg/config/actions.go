@@ -3,9 +3,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/relabel/actions"
-
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/relabel"
+	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
+	actions2 "github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel/actions"
 )
 
 func (act *RelabelConfigRuleAction) GetConcrete() (relabel.ActionConfig, error) {
@@ -26,11 +25,11 @@ func (act *RelabelConfigRuleAction) GetConcrete() (relabel.ActionConfig, error) 
 type EnsureAnnotationAction map[string]string
 
 func (e *EnsureAnnotationAction) ToAction() relabel.Action {
-	return actions.NewEnsureAnnotationAction(*e)
+	return actions2.NewEnsureAnnotationAction(*e)
 }
 
 type EnsureLabelAction map[string]string
 
 func (e *EnsureLabelAction) ToAction() relabel.Action {
-	return actions.NewEnsureLabelAction(*e)
+	return actions2.NewEnsureLabelAction(*e)
 }
