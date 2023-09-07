@@ -1,6 +1,8 @@
 package relabel
 
 import (
+	"log/slog"
+
 	"gomodules.xyz/jsonpatch/v3"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -36,9 +38,16 @@ type Rule struct {
 
 // Evaluate a k8s object against this rule
 // return if the object was modified.
-func (r *Rule) Evaluate(obj metaV1.Object) []jsonpatch.Operation {
+func (r *Rule) Evaluate(obj metaV1.Object, logger *slog.Logger) []jsonpatch.Operation {
+	l := logger.With(slog.String("rule-name", r.Name),
+		slog.String("namespace", obj.GetNamespace()),
+		slog.String("name", obj.GetName()))
+
+	l.Debug("evaluating object")
+
 	for _, c := range r.Conditions {
 		if !c.Satisfies(obj) {
+			l.Debug("object didn't satisfy preconditions")
 			return []jsonpatch.Operation{}
 		}
 	}
@@ -50,5 +59,6 @@ func (r *Rule) Evaluate(obj metaV1.Object) []jsonpatch.Operation {
 		operations = append(operations, newPatches...)
 	}
 
+	l.Debug("obj pending changes", slog.Int("num-changes", len(operations)))
 	return operations
 }

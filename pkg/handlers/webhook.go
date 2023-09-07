@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/mutation"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/mutation"
 
 	"github.com/gin-gonic/gin"
 	"k8s.io/apimachinery/pkg/api/errors"

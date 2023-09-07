@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/config"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/config"
 )
 
 // BuildLogger creates a log/slog logger from the given log config.

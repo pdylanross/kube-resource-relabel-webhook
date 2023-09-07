@@ -1,0 +1,19 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{ include "chart.fullname" . }}
+webhooks:
+  - name: v1.kube-resource-relabel-webhook.dev
+    admissionReviewVersions: ["v1beta1", "v1"]
+    sideEffects: None
+    clientConfig:
+      {{- if .Values.admission.secret.enabled }}
+      caBundle: "{{ .Values.admission.secret.caBundle }}"
+      {{- end }}
+      service:
+        namespace: {{ .Release.Namespace }}
+        name: {{ include "chart.fullname" . }}
+        path: /webhook/mutate
+        port: {{ .Values.service.port }}
+    rules:
+      {{ toYaml .Values.admission.rules | nindent 6}}

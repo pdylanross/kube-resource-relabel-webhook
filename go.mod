@@ -1,4 +1,4 @@
-module github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1
+module github.com/pdylanross/kube-resource-relabel-webhook
 
 go 1.21.0
 

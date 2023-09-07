@@ -1,7 +1,7 @@
 package actions
 
 import (
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel"
 	"gomodules.xyz/jsonpatch/v3"
 
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"

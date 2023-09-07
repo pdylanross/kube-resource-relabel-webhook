@@ -15,6 +15,12 @@ func ginLogger(logger *slog.Logger) gin.HandlerFunc {
 			return
 		}
 
+		if context.Request.RequestURI == "/livez" {
+			context.Next()
+
+			return
+		}
+
 		start := time.Now()
 
 		context.Next()

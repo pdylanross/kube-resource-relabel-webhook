@@ -5,16 +5,16 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/mutation"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/mutation"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel"
 	"gopkg.in/yaml.v3"
 
 	"github.com/Depado/ginprom"
 	"github.com/gin-gonic/gin"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/config"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/handlers"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/logger"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/util"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/config"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/handlers"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/logger"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/util"
 )
 
 // KubeRelabelApp is the main app entrypoint interface.
@@ -31,7 +31,7 @@ func (k *kubeRelabelApp) Run() error {
 	l, err := logger.BuildLogger(k.config.Logger)
 	util.ErrCheck(err)
 
-	l.Info("server startup", slog.Any("config", k.config))
+	l.Info("server initializing", slog.Any("config", k.config))
 
 	mutator, err := k.buildMutator(l)
 	util.ErrCheck(err)

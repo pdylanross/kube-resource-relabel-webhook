@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/util"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/util"
 )
 
 // AppConfig describes how the app should behave.
@@ -22,6 +22,8 @@ type AppConfig struct {
 	Logger *LoggerConfig
 	// RelabelConfigFile is the file path for the ruleset configuring how we should relabel
 	RelabelConfigFile string
+	// Version is the version of the currently running app
+	Version AppVersionConfig
 }
 
 func (a *AppConfig) LogValue() slog.Value {
@@ -58,6 +60,24 @@ type LoggerConfig struct {
 	// Format describes the log format we should write
 	// one of text, json
 	Format string
+}
+
+// AppVersionConfig describes the current app version.
+type AppVersionConfig struct {
+	// Version is the semver version of the app
+	Version string
+	// CommitHash is the git version of the app
+	CommitHash string
+	// BuildTimestamp is the ts of the current build
+	BuildTimestamp string
+}
+
+func (a *AppVersionConfig) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("version", a.Version),
+		slog.String("commit-hash", a.CommitHash),
+		slog.String("build-timestamp", a.BuildTimestamp),
+	)
 }
 
 // RelabelConfig is the config defining how we should relabel k8s objects.

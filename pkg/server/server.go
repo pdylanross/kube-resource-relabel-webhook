@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/oklog/run"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/config"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/config"
 )
 
 type internalServerConfig struct {

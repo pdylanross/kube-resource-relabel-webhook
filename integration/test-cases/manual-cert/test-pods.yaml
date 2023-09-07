@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod-should-mutate
+  namespace: default
+  labels:
+    dag_id: ubuntu
+    test-case: manual-cert
+spec:
+  containers:
+    - image: ubuntu
+      command:
+        - "sleep"
+        - "604800"
+      imagePullPolicy: IfNotPresent
+      name: ubuntu
+  restartPolicy: Always
+  terminationGracePeriodSeconds: 1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod-should-overwrite
+  namespace: default
+  labels:
+    dag_id: ubuntu
+    test-case: manual-cert
+  annotations:
+    karpenter.sh/do-not-evict: "false"
+spec:
+  containers:
+    - image: ubuntu
+      command:
+        - "sleep"
+        - "604800"
+      imagePullPolicy: IfNotPresent
+      name: ubuntu
+  restartPolicy: Always
+  terminationGracePeriodSeconds: 1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod-should-not-mutate
+  namespace: default
+  labels:
+    not_dag_id: ubuntu
+    test-case: manual-cert
+spec:
+  containers:
+    - image: ubuntu
+      command:
+        - "sleep"
+        - "604800"
+      imagePullPolicy: IfNotPresent
+      name: ubuntu
+  restartPolicy: Always
+  terminationGracePeriodSeconds: 1
+

@@ -3,7 +3,7 @@ package mutation
 import (
 	"log/slog"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel"
 )
 
 type Mutator struct {

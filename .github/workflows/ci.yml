@@ -21,4 +21,13 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-golang
       - name: unit-test
-        uses: ./.github/actions/unit-test
+        run: make unit-test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup-golang
+      - name: build
+        run: make build

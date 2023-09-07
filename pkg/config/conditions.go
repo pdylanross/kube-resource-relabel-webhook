@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel"
-	conditions2 "github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/services/relabel/conditions"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel"
+	conditions2 "github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel/conditions"
 )
 
 func (act *RelabelConfigRuleCondition) GetConcrete() (relabel.ConditionConfig, error) {

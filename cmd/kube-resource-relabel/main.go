@@ -2,11 +2,28 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
+
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/logger"
 
 	"github.com/alecthomas/kong"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/config"
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/server"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/config"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/server"
 )
+
+var (
+	Version        = "0.0.0-dev"
+	CommitHash     = "n/a"
+	BuildTimestamp = "n/a"
+)
+
+func GetVersion() config.AppVersionConfig {
+	return config.AppVersionConfig{
+		Version:        Version,
+		CommitHash:     CommitHash,
+		BuildTimestamp: BuildTimestamp,
+	}
+}
 
 type GlobalOpts struct {
 	LogLevel  string
@@ -75,17 +92,32 @@ func (s *ServeCmd) Run(opts *GlobalOpts) error {
 		MetricsServer:     s.ToMetricsConfig(),
 		Logger:            opts.ToLogConfig(),
 		RelabelConfigFile: s.RelabelConfigFile,
+		Version:           GetVersion(),
 	}
 
 	app := server.NewRelabelApp(appConf)
 	return app.Run()
 }
 
+type VersionCmd struct{}
+
+func (v *VersionCmd) Run(opts *GlobalOpts) error {
+	l, err := logger.BuildLogger(opts.ToLogConfig())
+	if err != nil {
+		return err
+	}
+
+	l.Info("version", slog.Any("version", GetVersion()))
+
+	return nil
+}
+
 var CLI struct {
 	LogLevel  string `help:"the log level" enum:"debug,info,warn,error" default:"info"`
 	LogFormat string `help:"the log format" enum:"json,text" default:"text"`
 
-	Serve ServeCmd `cmd:"" help:"Run the server"`
+	Serve   ServeCmd   `cmd:"" help:"Run the server"`
+	Version VersionCmd `cmd:"" help:"show version"`
 }
 
 func main() {

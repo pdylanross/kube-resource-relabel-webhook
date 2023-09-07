@@ -1,6 +1,8 @@
 package relabel
 
 import (
+	"log/slog"
+
 	"gomodules.xyz/jsonpatch/v3"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -12,11 +14,12 @@ type Relabeler interface {
 }
 
 func NewRelabeler(rules []Rule) Relabeler {
-	return &relabeler{rules}
+	return &relabeler{rules: rules, logger: slog.With(slog.String("component", "relabeler"))}
 }
 
 type relabeler struct {
-	rules []Rule
+	rules  []Rule
+	logger *slog.Logger
 }
 
 // Evaluate a k8s object against the current ruleset
@@ -24,7 +27,7 @@ type relabeler struct {
 func (r *relabeler) Evaluate(obj metaV1.Object) []jsonpatch.Operation {
 	var operations []jsonpatch.Operation
 	for _, rule := range r.rules {
-		newOps := rule.Evaluate(obj)
+		newOps := rule.Evaluate(obj, r.logger)
 		operations = append(operations, newOps...)
 	}
 

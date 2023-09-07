@@ -6,7 +6,7 @@ import (
 
 	"gomodules.xyz/jsonpatch/v3"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/v1alpha1/pkg/util"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/util"
 	admissionv1 "k8s.io/api/admission/v1"
 	admissionv1beta1 "k8s.io/api/admission/v1beta1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
