@@ -22,13 +22,13 @@ func patchMergeMap(path string, origin map[string]string, newValues map[string]s
 			op = "add"
 		}
 
-		operations = append(operations, jsonpatch.NewOperation(op, fmt.Sprintf("%s/%s", path, sanitizeKeyForJsonPatch(newKey)), newValue))
+		operations = append(operations, jsonpatch.NewOperation(op, fmt.Sprintf("%s/%s", path, sanitizeKeyForJSONPatch(newKey)), newValue))
 	}
 
 	return operations
 }
 
-func sanitizeKeyForJsonPatch(key string) string {
+func sanitizeKeyForJSONPatch(key string) string {
 	ret := strings.Replace(key, "~", "~0", -1)
 	return strings.Replace(ret, "/", "~1", -1)
 }

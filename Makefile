@@ -29,3 +29,6 @@ check:
 .PHONY: unit-test
 unit-test:
 	go test ./...
+
+.PHONY: pre-commit
+pre-commit: fix-check unit-test
