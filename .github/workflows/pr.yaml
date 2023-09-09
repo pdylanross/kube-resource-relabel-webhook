@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: engineerd/setup-kind@v0.5.0
+      - uses: helm/kind-action@v1.5.0
+        with:
+          install_only: true
       - uses: azure/setup-helm@v3
       - name: Setup
         uses: ./.github/actions/setup-golang
