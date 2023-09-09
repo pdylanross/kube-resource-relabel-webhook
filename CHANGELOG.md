@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.0...v0.1.1) (2023-09-09)
+
+
+### Bug Fixes
+
+* added on tag workflow to push images ([2a61838](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/2a618384f5593bb38c28c75ea62f86903c6ca3eb))
+
 ## [0.1.0](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.0.1...v0.1.0) (2023-09-09)
 
 
