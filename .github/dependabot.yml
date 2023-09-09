@@ -2,8 +2,13 @@ version: 2
 updates:
   - package-ecosystem: "gomod"
     directory: "/"
+    labels:
+      - "dependencies"
+      - "automerge"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "chore"
     ignore:
       # Ignore Kubernetes dependencies to have full control on them.
       - dependency-name: "k8s.io/*"
