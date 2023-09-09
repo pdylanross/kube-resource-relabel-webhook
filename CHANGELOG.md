@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.2...v0.1.3) (2023-09-09)
+
+
+### Bug Fixes
+
+* force a release ([b7e4a0f](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/b7e4a0f71d40b4f64e1f828f67fc4cbea477b1eb))
+
 ## [0.1.2](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.1...v0.1.2) (2023-09-09)
 
 
