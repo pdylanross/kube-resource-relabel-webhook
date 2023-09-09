@@ -38,13 +38,17 @@ func TestPatchMergeMap_AddMultipleValues(t *testing.T) {
 
 	assert.Equal(t, 2, len(results))
 
-	assert.Equal(t, "add", results[0].Operation)
-	assert.Equal(t, "/metadata/annotations/newKey", results[0].Path)
-	assert.Equal(t, "newValue", results[0].Value)
-
-	assert.Equal(t, "add", results[1].Operation)
-	assert.Equal(t, "/metadata/annotations/newKey2", results[1].Path)
-	assert.Equal(t, "newValue", results[1].Value)
+	for _, v := range results {
+		if v.Path == "/metadata/annotations/newKey" {
+			assert.Equal(t, "newValue", v.Value)
+			assert.Equal(t, "add", v.Operation)
+		} else if v.Path == "/metadata/annotations/newKey2" {
+			assert.Equal(t, "newValue", v.Value)
+			assert.Equal(t, "add", v.Operation)
+		} else {
+			t.Errorf("unknown path %s", v.Path)
+		}
+	}
 }
 
 func TestPatchMergeMap_ReplaceValue(t *testing.T) {
