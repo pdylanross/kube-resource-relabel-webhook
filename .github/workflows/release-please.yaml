@@ -18,8 +18,3 @@ jobs:
           release-type: go
           package-name: github.com/pdylanross/kube-resource-relabel-webhook
           command: manifest
-      - uses: ./.github/actions/release
-        name: Publish Container
-        with:
-          tag: ${{ steps.release.outputs.tag_name }}
-        if: ${{ steps.release.outputs.release_created }}
