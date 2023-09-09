@@ -17,7 +17,7 @@ jobs:
         with:
           release-type: go
           package-name: github.com/pdylanross/kube-resource-relabel-webhook
-          bump-minor-pre-major: true
+          command: manifest
       - uses: ./.github/actions/release
         name: Publish Container
         with:
