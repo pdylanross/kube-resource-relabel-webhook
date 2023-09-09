@@ -134,11 +134,7 @@ func (r *RelabelConfigRule) ToRelabelRule() (*relabel.Rule, error) {
 		actions[idx] = concrete.ToAction()
 	}
 
-	return &relabel.Rule{
-		Conditions: conditions,
-		Actions:    actions,
-		Name:       r.Name,
-	}, nil
+	return relabel.NewRelabelRule(r.Name, conditions, actions), nil
 }
 
 // RelabelConfigRuleCondition is a singular condition to be met.

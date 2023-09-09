@@ -1,10 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
+
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/logger"
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/util"
 
 	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/mutation"
 
@@ -56,6 +60,17 @@ func (wh *WebhookHandlers) MutateHandler(context *gin.Context) {
 	}
 
 	wh.mutator.Mutate(review)
+
+	logger.LogIf(wh.logger, slog.LevelDebug, func(l *slog.Logger) {
+		marshalled, err := json.Marshal(review.ToSerializeable())
+		util.ErrCheck(err) // this should never fail
+
+		l.DebugContext(context, "webhook response",
+			slog.Group("response",
+				slog.String("review", string(marshalled)),
+			),
+		)
+	})
 
 	context.JSON(review.GetStatus(), review.ToSerializeable())
 }

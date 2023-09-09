@@ -1,0 +1,15 @@
+on: [pull_request]
+
+name: PR
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: engineerd/setup-kind@v0.5.0
+      - uses: azure/setup-helm@v3
+      - name: Setup
+        uses: ./.github/actions/setup-golang
+      - name: unit-test
+        run: make integration-test

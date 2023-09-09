@@ -2,6 +2,10 @@
 
 set -e
 
-COMMIT_HASH=$(git rev-parse HEAD)
+REPO=ghcr.io/pdylanross/kube-resource-relabel-webhook
 
-docker push ghcr.io/pdylanross/kube-resource-relabel-webhook:$COMMIT_HASH
+COMMIT_HASH=$(git rev-parse HEAD)
+TAG=${1:-$COMMIT_HASH}
+
+docker tag $REPO:$COMMIT_HASH $REPO:$TAG
+docker push $REPO:$TAG

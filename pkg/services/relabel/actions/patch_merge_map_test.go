@@ -92,3 +92,18 @@ func TestPatchMergeMap_ValueWithSlash(t *testing.T) {
 	assert.Equal(t, "/metadata/annotations/old~1Key", results[0].Path)
 	assert.Equal(t, "newValue", results[0].Value)
 }
+
+func TestPatchMergeMap_NilOrigin(t *testing.T) {
+	path := "/metadata/annotations"
+	var origin map[string]string = nil
+	newValues := map[string]string{
+		"old/Key": "newValue",
+	}
+
+	results := patchMergeMap(path, origin, newValues)
+
+	assert.Equal(t, 1, len(results))
+	assert.Equal(t, "add", results[0].Operation)
+	assert.Equal(t, "/metadata/annotations", results[0].Path)
+	assert.Equal(t, newValues, results[0].Value)
+}

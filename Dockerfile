@@ -4,12 +4,14 @@ ARG VERSION="0.0.0-docker"
 ARG COMMIT_HASH="n/a-docker"
 ARG BUILD_TIMESTAMP="n/a-docker"
 
+ENV GO111MODULE=on
+
 WORKDIR /go/src/app
 
 COPY go.mod .
 COPY go.sum .
 
-RUN go mod download
+RUN go mod download -x
 
 COPY . .
 

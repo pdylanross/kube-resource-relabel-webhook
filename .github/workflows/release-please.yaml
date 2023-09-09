@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+name: release-please
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: go
+          package-name: github.com/pdylanross/kube-resource-relabel-webhook
+          bump-minor-pre-major: true
+      - uses: ../actions/release
+        name: Publish Container
+        with:
+          tag: ${{ steps.release.outputs.tag_name }}
+        if: ${{ steps.release.outputs.release_created }}

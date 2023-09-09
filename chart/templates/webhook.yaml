@@ -15,5 +15,17 @@ webhooks:
         name: {{ include "chart.fullname" . }}
         path: /webhook/mutate
         port: {{ .Values.service.port }}
+    objectSelector:
+      # app.kubernetes.io/name: {{ include "chart.name" . }}
+      # app.kubernetes.io/instance: {{ .Release.Name }}
+      matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: NotIn
+          values:
+            - {{ include "chart.name" . }}
+        - key: app.kubernetes.io/instance
+          operator: NotIn
+          values:
+            - {{ .Release.Name }}
     rules:
       {{ toYaml .Values.admission.rules | nindent 6}}

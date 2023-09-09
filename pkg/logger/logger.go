@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -26,6 +27,12 @@ func BuildLogger(cfg *config.LoggerConfig) (*slog.Logger, error) {
 	slog.SetDefault(l)
 
 	return l, nil
+}
+
+func LogIf(l *slog.Logger, level slog.Level, f func(l *slog.Logger)) {
+	if l.Enabled(context.Background(), level) {
+		f(l)
+	}
 }
 
 func buildHandlerOptions(cfg *config.LoggerConfig) (*slog.HandlerOptions, error) {

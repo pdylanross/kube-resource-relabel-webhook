@@ -47,11 +47,11 @@ func TestEnsureLabelAction_UpdateAddsNewField(t *testing.T) {
 }
 
 func TestEnsureLabelAction_UpdateAddsNewField_PriorBlank(t *testing.T) {
-	annotations := map[string]string{
+	labels := map[string]string{
 		"test": "value",
 	}
 
-	action := NewEnsureLabelAction(annotations)
+	action := NewEnsureLabelAction(labels)
 
 	pod := &k8sapiv1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
@@ -67,7 +67,7 @@ func TestEnsureLabelAction_UpdateAddsNewField_PriorBlank(t *testing.T) {
 	results := action.Update(pod)
 
 	assert.Equal(t, 1, len(results))
-	assert.Equal(t, "/metadata/labels/test", results[0].Path)
+	assert.Equal(t, "/metadata/labels", results[0].Path)
 	assert.Equal(t, "add", results[0].Operation)
-	assert.Equal(t, "value", results[0].Value)
+	assert.Equal(t, labels, results[0].Value)
 }

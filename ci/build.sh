@@ -10,4 +10,6 @@ docker build . \
   --build-arg "VERSION=$VERSION" \
   --build-arg "COMMIT_HASH=$COMMIT_HASH" \
   --build-arg "BUILD_TIMESTAMP=$BUILD_TIMESTAMP" \
-  -t ghcr.io/pdylanross/kube-resource-relabel-webhook:$COMMIT_HASH
+  -t relabel:dev
+
+docker tag relabel:dev ghcr.io/pdylanross/kube-resource-relabel-webhook:$COMMIT_HASH

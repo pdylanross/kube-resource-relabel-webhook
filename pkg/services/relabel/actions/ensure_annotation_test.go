@@ -68,7 +68,7 @@ func TestEnsureAnnotationAction_UpdateAddsNewField_PriorBlank(t *testing.T) {
 	results := action.Update(pod)
 
 	assert.Equal(t, 1, len(results))
-	assert.Equal(t, "/metadata/annotations/test", results[0].Path)
+	assert.Equal(t, "/metadata/annotations", results[0].Path)
 	assert.Equal(t, "add", results[0].Operation)
-	assert.Equal(t, "value", results[0].Value)
+	assert.Equal(t, annotations, results[0].Value)
 }

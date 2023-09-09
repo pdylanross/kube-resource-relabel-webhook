@@ -3,6 +3,8 @@ package relabel
 import (
 	"log/slog"
 
+	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel/actions/implicit"
+
 	"gomodules.xyz/jsonpatch/v3"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -31,21 +33,44 @@ type ActionConfig interface {
 
 // Rule is a single rule describing if and how we should relabel an object.
 type Rule struct {
-	Conditions []Condition
-	Actions    []Action
-	Name       string
+	conditions []Condition
+	actions    []Action
+	name       string
+}
+
+func NewRelabelRule(name string, conditions []Condition, actions []Action) *Rule {
+	actions = addImplicitActions(actions)
+
+	return &Rule{
+		name:       name,
+		actions:    actions,
+		conditions: conditions,
+	}
+}
+
+func addImplicitActions(source []Action) []Action {
+	//return append(getImplicitActions(), source...)
+	return source
+}
+
+// getImplicitActions returns all actions that need to be ran prior to any others, always
+func getImplicitActions() []Action {
+	return []Action{
+		&implicit.EnsureLabelsExistsAction{},
+		&implicit.EnsureAnnotationExistsAction{},
+	}
 }
 
 // Evaluate a k8s object against this rule
 // return if the object was modified.
 func (r *Rule) Evaluate(obj metaV1.Object, logger *slog.Logger) []jsonpatch.Operation {
-	l := logger.With(slog.String("rule-name", r.Name),
+	l := logger.With(slog.String("rule-name", r.name),
 		slog.String("namespace", obj.GetNamespace()),
 		slog.String("name", obj.GetName()))
 
 	l.Debug("evaluating object")
 
-	for _, c := range r.Conditions {
+	for _, c := range r.conditions {
 		if !c.Satisfies(obj) {
 			l.Debug("object didn't satisfy preconditions")
 			return []jsonpatch.Operation{}
@@ -54,7 +79,7 @@ func (r *Rule) Evaluate(obj metaV1.Object, logger *slog.Logger) []jsonpatch.Oper
 
 	var operations []jsonpatch.Operation
 
-	for _, a := range r.Actions {
+	for _, a := range r.actions {
 		newPatches := a.Update(obj)
 		operations = append(operations, newPatches...)
 	}

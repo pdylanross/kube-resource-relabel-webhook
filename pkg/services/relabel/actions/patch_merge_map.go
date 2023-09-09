@@ -8,6 +8,12 @@ import (
 )
 
 func patchMergeMap(path string, origin map[string]string, newValues map[string]string) []jsonpatch.Operation {
+	if origin == nil {
+		return []jsonpatch.Operation{
+			jsonpatch.NewOperation("add", path, newValues),
+		}
+	}
+
 	var operations []jsonpatch.Operation
 
 	for newKey, newValue := range newValues {

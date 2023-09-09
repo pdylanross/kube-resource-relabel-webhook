@@ -35,12 +35,6 @@ func TestRelabelConfig_ToRules_AirflowDagConfig(t *testing.T) {
 
 	assert.NotEmpty(t, rules)
 	assert.Equal(t, 1, len(rules))
-
-	rule := rules[0]
-
-	assert.Equal(t, "airflow-k8s-pod-operator-do-not-evict", rule.Name)
-	assert.Equal(t, 1, len(rule.Conditions))
-	assert.Equal(t, 1, len(rule.Actions))
 }
 
 func GetSampleConfigFilePath(configName string, t *testing.T) string {
