@@ -18,3 +18,4 @@ jobs:
           release-type: go
           package-name: github.com/pdylanross/kube-resource-relabel-webhook
           command: manifest
+          token: ${{ secrets.RELEASE_PLEASE_PAT }}
