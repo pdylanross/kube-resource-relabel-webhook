@@ -41,6 +41,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Release Container
-        uses: ../actions/release
+        uses: ./.github/actions/release
         with:
           tag: ${{ github.sha }}
