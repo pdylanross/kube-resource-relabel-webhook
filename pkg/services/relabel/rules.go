@@ -3,8 +3,6 @@ package relabel
 import (
 	"log/slog"
 
-	"github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel/actions/implicit"
-
 	"gomodules.xyz/jsonpatch/v3"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -49,16 +47,7 @@ func NewRelabelRule(name string, conditions []Condition, actions []Action) *Rule
 }
 
 func addImplicitActions(source []Action) []Action {
-	//return append(getImplicitActions(), source...)
 	return source
-}
-
-// getImplicitActions returns all actions that need to be ran prior to any others, always
-func getImplicitActions() []Action {
-	return []Action{
-		&implicit.EnsureLabelsExistsAction{},
-		&implicit.EnsureAnnotationExistsAction{},
-	}
 }
 
 // Evaluate a k8s object against this rule

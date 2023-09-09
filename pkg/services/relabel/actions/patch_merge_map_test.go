@@ -95,7 +95,7 @@ func TestPatchMergeMap_ValueWithSlash(t *testing.T) {
 
 func TestPatchMergeMap_NilOrigin(t *testing.T) {
 	path := "/metadata/annotations"
-	var origin map[string]string = nil
+	var origin map[string]string
 	newValues := map[string]string{
 		"old/Key": "newValue",
 	}
