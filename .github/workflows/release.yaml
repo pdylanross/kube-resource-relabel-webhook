@@ -36,6 +36,7 @@ jobs:
         run: ./ci/publish.sh ${{ github.ref_name }}
 
       - name: Configure Git
+        working-directory: ./pages
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
@@ -46,7 +47,7 @@ jobs:
       - name: Package helm chart
         working-directory: ./
         run: |
-          helm package ./main/chart -d ./gh-pages/helm-charts
+          helm package ./main/chart -d ./pages/helm-charts
 
       - name: Setup helm index
         working-directory: ./gh-pages/helm-charts
