@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.1...v0.2.2) (2023-09-14)
+
+
+### Bug Fixes
+
+* **ci:** fixed gitconfig for pages repo in release ([dfa5e83](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/dfa5e83c58bdd2566be4d9718fc777a1cb59dcf2))
+
 ## [0.2.1](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.0...v0.2.1) (2023-09-14)
 
 
