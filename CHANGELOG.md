@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.3...v0.2.0) (2023-09-14)
+
+
+### Features
+
+* added helm release ([410aba7](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/410aba7155bacb6bc10dbac93ce2b1f60f75e716))
+
 ## [0.1.3](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.2...v0.1.3) (2023-09-09)
 
 
