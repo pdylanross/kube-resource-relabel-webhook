@@ -24,7 +24,7 @@ replicaCount: 3
 image:
   repository: ghcr.io/pdylanross/kube-resource-relabel-webhook
   pullPolicy: Always
-  tag: 0.1.3
+  tag: 0.2.0
 resources:
   requests:
     memory: 128Mi
