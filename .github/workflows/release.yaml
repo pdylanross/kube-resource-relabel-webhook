@@ -9,7 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/release
+        with:
+          path: main
+
+      - uses: actions/checkout@v4
+        with:
+          path: pages
+          ref: gh-pages
+
+      - uses: ./main/.github/actions/release
         name: Publish Container
         with:
           tag: ${{ github.ref_name }}
@@ -22,7 +30,18 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v3
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.5.0
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Package helm chart
+        run: |
+          helm package ./main/chart -d ./gh-pages/helm-charts
+
+      - name: Setup helm index
+        working-directory: ./gh-pages/helm-charts
+        run: |
+          helm repo index --url https://pdylanross.github.io/kube-resource-relabel-webhook .
+
+      - name: Commit chart repo
+        working-directory: ./gh-pages
+        run: |
+          git add -A ./
+          git commit -am "release: ${{ github.ref_name }}"
+          git push 
