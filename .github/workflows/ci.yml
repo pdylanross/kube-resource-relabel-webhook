@@ -54,3 +54,16 @@ jobs:
         uses: ./.github/actions/release
         with:
           tag: ${{ github.sha }}
+
+  release-please:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - release-dev-container
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: go
+          package-name: github.com/pdylanross/kube-resource-relabel-webhook
+          command: manifest
+          token: ${{ secrets.RELEASE_PLEASE_PAT }}

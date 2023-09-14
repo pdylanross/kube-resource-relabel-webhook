@@ -17,10 +17,23 @@ jobs:
           path: pages
           ref: gh-pages
 
-      - uses: ./main/.github/actions/release
-        name: Publish Container
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
         with:
-          tag: ${{ github.ref_name }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Container
+        working-directory: ./main
+        run: make build
+
+      - name: Publish Tag
+        working-directory: ./main
+        run: ./ci/publish.sh ${{ github.ref_name }}
 
       - name: Configure Git
         run: |
@@ -31,6 +44,7 @@ jobs:
         uses: azure/setup-helm@v3
 
       - name: Package helm chart
+        working-directory: ./
         run: |
           helm package ./main/chart -d ./gh-pages/helm-charts
 
