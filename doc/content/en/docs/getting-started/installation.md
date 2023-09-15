@@ -15,5 +15,4 @@ toc: true
 
 ```shell
 helm repo add kube-resource-relabel-webhook https://pdylanross.github.io/kube-resource-relabel-webhook/helm-charts
-
 ```

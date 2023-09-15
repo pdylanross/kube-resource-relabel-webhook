@@ -41,6 +41,7 @@ jobs:
 
   build-docs:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v4
         with:
@@ -113,6 +114,7 @@ jobs:
           path: ./pages/public
 
   deploy-docs:
+    permissions: write-all
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
