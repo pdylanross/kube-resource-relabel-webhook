@@ -54,7 +54,7 @@ jobs:
         working-directory: ./pages/helm-charts
         run: |
           helm repo index --url https://pdylanross.github.io/kube-resource-relabel-webhook .
-          cp -r ../public/helm-charts
+          cp -r . ../public/helm-charts
           
 
       - name: Build
