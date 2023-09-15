@@ -5,13 +5,14 @@ ARG COMMIT_HASH="n/a-docker"
 ARG BUILD_TIMESTAMP="n/a-docker"
 
 ENV GO111MODULE=on
+ENV GOCACHE /go/cache
 
 WORKDIR /go/src/app
 
 COPY go.mod .
 COPY go.sum .
 
-RUN go mod download
+RUN --mount=type=cache,target=/go/cache go mod download
 
 COPY . .
 
