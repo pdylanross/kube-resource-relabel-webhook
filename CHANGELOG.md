@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.2...v0.2.3) (2023-09-15)
+
+
+### Bug Fixes
+
+* dockerfile cache go mod correctly ([a68307b](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/a68307b44306e941c138c1cd0208b1a6add0b4a0))
+
 ## [0.2.2](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.1...v0.2.2) (2023-09-14)
 
 
