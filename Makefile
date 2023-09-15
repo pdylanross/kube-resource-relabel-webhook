@@ -39,3 +39,11 @@ integration-test: build # Run integration tests
 
 .PHONY: pre-commit
 pre-commit: fix-check unit-test # Run all standard cleanups before a commit
+
+.PHONY: doc-setup
+doc-setup:
+	cd doc && $(MAKE) setup
+
+.PHONY: doc-serve
+doc-serve: doc-setup
+	cd doc && hugo serve

@@ -1,6 +1,9 @@
 THEME_VERSION := v0.41.1
 THEME := hugo-geekdoc
 
+.PHONY: setup
+setup: doc-assets
+
 .PHONY: doc-assets
 doc-assets: themes/hugo-geekdoc
 

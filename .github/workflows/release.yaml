@@ -93,8 +93,8 @@ jobs:
           cp -r . ../public/helm-charts
 
       - name: Setup Doc Site Deps
-        working-directory: ./main/doc
-        run: make doc-assets
+        working-directory: ./main
+        run: make doc-setup
 
       - name: Build Doc Site
         working-directory: ./main/doc

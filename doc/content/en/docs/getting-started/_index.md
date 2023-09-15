@@ -9,4 +9,5 @@ draft: false
 toc: true
 ---
 
-Some blurb about how we get the party started
+Kube Resource Relabel Webhook is a simple and expressive kubernetes mutation webhook to dynamically add labels and annotations to resources.
+
