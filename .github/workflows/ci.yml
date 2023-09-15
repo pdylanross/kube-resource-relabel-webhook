@@ -53,6 +53,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs:
       - lint
+      - lint-chart
       - unit-test
       - build
     steps:

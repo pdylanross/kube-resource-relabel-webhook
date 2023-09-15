@@ -50,12 +50,12 @@ jobs:
           helm package ./main/chart -d ./pages/helm-charts
 
       - name: Setup helm index
-        working-directory: ./gh-pages/helm-charts
+        working-directory: ./pages/helm-charts
         run: |
           helm repo index --url https://pdylanross.github.io/kube-resource-relabel-webhook .
 
       - name: Commit chart repo
-        working-directory: ./gh-pages
+        working-directory: ./pages
         run: |
           git add -A ./
           git commit -am "release: ${{ github.ref_name }}"
