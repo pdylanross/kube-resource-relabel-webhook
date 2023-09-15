@@ -4,6 +4,7 @@ package util
 
 import (
 	"fmt"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	clientsetscheme "k8s.io/client-go/kubernetes/scheme"
@@ -47,6 +48,8 @@ func (itf *IntegrationTestFixture) HelmInstallRelabel(relValuesFile string) {
 	if err != nil {
 		itf.t.Errorf("could not install helm chart: %s", err.Error())
 	}
+
+	time.Sleep(1 * time.Second)
 }
 
 var SleepPodTerminationPeriod int64 = 1
