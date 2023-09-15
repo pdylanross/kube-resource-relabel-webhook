@@ -1,12 +1,11 @@
 FROM --platform=$BUILDPLATFORM golang:1.21 as build
 
+ENV GO111MODULE=on
+WORKDIR /src
+
 ARG VERSION="0.0.0-docker"
 ARG COMMIT_HASH="n/a-docker"
 ARG BUILD_TIMESTAMP="n/a-docker"
-
-ENV GO111MODULE=on
-
-WORKDIR /src
 
 ARG TARGETOS="linux"
 ARG TARGETARCH="amd64"

@@ -1,0 +1,10 @@
+---
+more:
+  - name: GitHub
+    ref: https://github.com/pdylanross/kube-resource-relabel-webhook
+    icon: gdoc_github
+    external: true
+  - name: Releases
+    ref: "https://github.com/pdylanross/kube-resource-relabel-webhook/releases"
+    external: true
+    icon: "gdoc_download"
