@@ -60,8 +60,11 @@ jobs:
           helm repo index --url https://pdylanross.github.io/kube-resource-relabel-webhook .
           cp -r . ../public/helm-charts
           
+      - name: Setup Doc Site Deps
+        working-directory: ./main/doc
+        run: make doc-assets
 
-      - name: Build
+      - name: Build Doc Site
         working-directory: ./main/doc
         run: hugo -v --minify --destination ../../pages/public
 
