@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.4](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.3...v0.2.4) (2023-09-15)
+
+
+### Bug Fixes
+
+* **ci:** use docker build and push ([c85ed70](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/c85ed70093d049ad10b4bf15bd984a4d91209829))
+* cleanup docs ([93d29be](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/93d29befad35727b4151e6a76396285df822fec4))
+* optimized multiplatform container build ([0c80d60](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/0c80d600935b07205f0e1307d25a951387ad1b2d))
+* re-added build target for integration tests ([588a10b](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/588a10bd2e9694062c251e525623e2b15fb432ac))
+* set chart version with release pls ([c85ed70](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/c85ed70093d049ad10b4bf15bd984a4d91209829))
+
 ## [0.2.3](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.2...v0.2.3) (2023-09-15)
 
 
