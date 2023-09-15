@@ -3,6 +3,8 @@ languageCode = 'en-us'
 title = 'kube-resource-relabel-webhook docs'
 theme = "hugo-geekdoc"
 
+pluralizeListTitles = false
+
 pygmentsUseClasses = true
 pygmentsCodeFences = true
 disablePathToLower = true
@@ -16,6 +18,8 @@ enableRobotsTXT = true
     [markup.tableOfContents]
         startLevel = 1
         endLevel = 9
+[taxonomies]
+tag = "tags"
 
 [params]
     # (Optional, default none) Set source repository location. Used for 'Edit page' links.
@@ -27,19 +31,3 @@ enableRobotsTXT = true
     # You can also specify this parameter per page in front matter.
     geekdocEditPath = "doc"
 
-[params.docs]
-darkMode=true
-
-repoURL="https://github.com/pdylanross/kube-resource-relabel-webhook"
-repoBranch="main"
-editPage=true
-lastMod=true
-lastModRelative=true
-
-
-[menu]
-[[menu.primary]]
-name  = "Docs"
-url = "docs/"
-identifier = "docs"
-weight = 10
