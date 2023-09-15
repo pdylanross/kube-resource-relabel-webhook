@@ -39,16 +39,23 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Create pages deploy dir
+        working-directory: ./pages
+        run: |
+          mkdir -p ./public/helm-charts
 
       - name: Package helm chart
         working-directory: ./
         run: |
           helm package ./main/chart -d ./pages/helm-charts
+          
 
       - name: Setup helm index
         working-directory: ./pages/helm-charts
         run: |
           helm repo index --url https://pdylanross.github.io/kube-resource-relabel-webhook .
+          cp -r ../public/helm-charts
+          
 
       - name: Build
         working-directory: ./main/doc
