@@ -26,3 +26,5 @@ go.work
 # Local Development Files
 local
 .env
+
+public
