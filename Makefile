@@ -10,14 +10,6 @@ help: # Show this help.
 .PHONY: default
 default: help
 
-.PHONY: build
-build: # Build a container image
-	./ci/build.sh
-
-.PHONY: publish
-publish: build # publish the current image to the container registry
-	./ci/publish.sh $(TAG)
-
 .PHONY: fix-deps
 fix-deps: # Run dependency maintenance commands
 	go mod tidy
