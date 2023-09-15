@@ -52,7 +52,7 @@ jobs:
 
       - name: Build
         working-directory: ./main/doc
-        run: hugo -v --minify --destination ../../pages
+        run: hugo -v --minify --destination ../../pages/public
 
       - name: Commit chart repo
         working-directory: ./pages
@@ -60,3 +60,19 @@ jobs:
           git add -A ./
           git commit -am "release: ${{ github.ref_name }}"
           git push
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
