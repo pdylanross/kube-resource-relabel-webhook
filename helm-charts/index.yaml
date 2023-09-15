@@ -3,12 +3,12 @@ entries:
   kube-resource-relabel-webhook:
   - apiVersion: v2
     appVersion: 0.2.3
-    created: "2023-09-15T00:36:56.446371171Z"
+    created: "2023-09-15T03:01:23.438157328Z"
     description: A lightweight mutation webhook to rewrite labels and annotations
-    digest: 2396c7fbe4801605486927252b5f7fdcd2d8efcbe49ba0e97fd0f995e2fff9c7
+    digest: f26e5b85d6bd22cce60862b8cc616aba40e3a2a0c660bcfbf01ea0c27ef32823
     name: kube-resource-relabel-webhook
     type: application
     urls:
     - https://pdylanross.github.io/kube-resource-relabel-webhook/kube-resource-relabel-webhook-0.1.0.tgz
     version: 0.1.0
-generated: "2023-09-15T00:36:56.445706269Z"
+generated: "2023-09-15T03:01:23.436475991Z"
