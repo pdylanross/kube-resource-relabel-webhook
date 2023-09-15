@@ -1,6 +1,6 @@
 ---
-weight: 999
-title: "Installation"
+weight: 200
+title: "Configuration"
 description: ""
 icon: "article"
 date: "2023-09-14T21:23:46-05:00"
@@ -9,4 +9,4 @@ draft: false
 toc: true
 ---
 
-Some information
+Heres where you do stuff with yaml
