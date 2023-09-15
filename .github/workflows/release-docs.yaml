@@ -43,6 +43,10 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v3
+
       - name: Create pages deploy dir
         working-directory: ./pages
         run: |
@@ -66,7 +70,7 @@ jobs:
 
       - name: Build Doc Site
         working-directory: ./main/doc
-        run: hugo -v --destination ../../pages/public
+        run: hugo -v --destination ../../pages/public --gc --baseURL "${{ steps.pages.outputs.base_url }}"
 
       - name: Commit chart repo
         working-directory: ./pages

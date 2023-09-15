@@ -4,12 +4,13 @@ title = 'kube-resource-relabel-webhook docs'
 theme = "hugo-geekdoc"
 
 pluralizeListTitles = false
-
 pygmentsUseClasses = true
 pygmentsCodeFences = true
 disablePathToLower = true
 enableGitInfo = true
 enableRobotsTXT = true
+
+
 
 [markup]
     [markup.goldmark.renderer]
