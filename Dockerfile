@@ -1,22 +1,21 @@
-FROM golang:1.21 as build
+FROM --platform=$BUILDPLATFORM golang:1.21 as build
 
 ARG VERSION="0.0.0-docker"
 ARG COMMIT_HASH="n/a-docker"
 ARG BUILD_TIMESTAMP="n/a-docker"
 
 ENV GO111MODULE=on
-ENV GOCACHE /go/cache
 
-WORKDIR /go/src/app
+WORKDIR /src
 
-COPY go.mod .
-COPY go.sum .
+ARG TARGETOS="linux"
+ARG TARGETARCH="amd64"
 
-RUN --mount=type=cache,target=/go/cache go mod download
-
-COPY . .
-
-RUN CGO_ENABLED=0 go build -o /go/bin/kube-resource-relabel-webhook \
+RUN --mount=target=. \
+    --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg \
+    GOOS=$TARGETOS GOARCH=$TARGETARCH CGO_ENABLED=0 \
+    go build -o /out/kube-resource-relabel-webhook \
     -ldflags="-X 'main.Version=$VERSION' -X 'main.CommitHash=$COMMIT_HASH' -X 'main.BuildTimestamp=$BUILD_TIMESTAMP'" \
     ./cmd/kube-resource-relabel
 
@@ -32,5 +31,5 @@ LABEL org.opencontainers.image.created="$BUILD_TIMESTAMP"
 LABEL org.opencontainers.image.version="$VERSION"
 LABEL org.opencontainers.image.revision="$COMMIT_HASH"
 
-COPY --from=build /go/bin/kube-resource-relabel-webhook /
+COPY --from=build /out/kube-resource-relabel-webhook /
 ENTRYPOINT ["/kube-resource-relabel-webhook"]
