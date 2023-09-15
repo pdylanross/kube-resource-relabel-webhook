@@ -52,7 +52,7 @@ jobs:
 
       - name: Build
         working-directory: ./main/doc
-        run: hugo -v --minify --destination ./pages
+        run: hugo -v --minify --destination ../../pages
 
       - name: Commit chart repo
         working-directory: ./pages
