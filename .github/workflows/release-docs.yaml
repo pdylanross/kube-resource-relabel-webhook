@@ -20,7 +20,7 @@ jobs:
           ref: gh-pages
 
       - name: Setup Golang
-        uses: ./.github/actions/setup-golang
+        uses: ./main/.github/actions/setup-golang
 
       - name: Install Hugo
         uses: peaceiris/actions-hugo@v2
