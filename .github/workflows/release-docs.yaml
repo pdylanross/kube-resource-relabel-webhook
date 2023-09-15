@@ -1,3 +1,5 @@
+name: Release Docs
+
 on:
   push:
     branches:
@@ -16,6 +18,9 @@ jobs:
         with:
           path: pages
           ref: gh-pages
+
+      - name: Setup Golang
+        uses: ./.github/actions/setup-golang
 
       - name: Install Hugo
         uses: peaceiris/actions-hugo@v2
