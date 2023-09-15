@@ -1,0 +1,57 @@
+on:
+  push:
+    branches:
+      - docs
+
+
+jobs:
+  release-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: main
+
+      - uses: actions/checkout@v4
+        with:
+          path: pages
+          ref: gh-pages
+
+      - name: Install Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "0.118.2"
+          extended: true
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        working-directory: ./pages
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+
+      - name: Package helm chart
+        working-directory: ./
+        run: |
+          helm package ./main/chart -d ./pages/helm-charts
+
+      - name: Setup helm index
+        working-directory: ./pages/helm-charts
+        run: |
+          helm repo index --url https://pdylanross.github.io/kube-resource-relabel-webhook .
+
+      - name: Build
+        working-directory: ./main/doc
+        run: hugo -v --minify --destination ./pages
+
+      - name: Commit chart repo
+        working-directory: ./pages
+        run: |
+          git add -A ./
+          git commit -am "release: ${{ github.ref_name }}"
+          git push
