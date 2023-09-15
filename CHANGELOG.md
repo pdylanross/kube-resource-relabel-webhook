@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.5](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.4...v0.2.5) (2023-09-15)
+
+
+### Bug Fixes
+
+* **integration-tests:** add small delay after helm install ([e94008d](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/e94008db34e1ded5a87955dfb16bdbbe31a20375))
+* permissions for release pipeline ([a4b3124](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/a4b31249f10f226f909b338b350d60790ceccdf6))
+
 ## [0.2.4](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.3...v0.2.4) (2023-09-15)
 
 
