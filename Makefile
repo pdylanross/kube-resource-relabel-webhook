@@ -10,6 +10,10 @@ help: # Show this help.
 .PHONY: default
 default: help
 
+.PHONY: build
+build:
+	docker build -t relabel:dev .
+
 .PHONY: fix-deps
 fix-deps: # Run dependency maintenance commands
 	go mod tidy
