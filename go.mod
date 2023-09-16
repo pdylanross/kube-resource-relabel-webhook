@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/Depado/ginprom v1.7.11
 	github.com/alecthomas/kong v0.8.0
+	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/dustinkirkland/golang-petname v0.0.0-20230626224747-e794b9370d49
 	github.com/gin-gonic/gin v1.9.1
 	github.com/oklog/run v1.1.0
@@ -19,7 +20,6 @@ require (
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.10.0 // indirect
-	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect

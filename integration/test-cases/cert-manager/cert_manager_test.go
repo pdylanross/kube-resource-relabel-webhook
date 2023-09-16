@@ -1,3 +1,5 @@
+//go:build integration_tests
+
 package cert_manager
 
 import (
