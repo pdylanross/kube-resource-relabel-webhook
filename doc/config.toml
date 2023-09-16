@@ -10,6 +10,12 @@ disablePathToLower = true
 enableGitInfo = true
 enableRobotsTXT = true
 
+defaultContentLanguage = "en"
+
+[languages.en]
+languageName = "English"
+contentDir = "content/en"
+weight = 10
 
 
 [markup]
@@ -25,7 +31,7 @@ tag = "tags"
 [params]
     # (Optional, default none) Set source repository location. Used for 'Edit page' links.
     # You can also specify this parameter per page in front matter.
-    geekdocRepo = "https://github.com/pdylanross/kube-resource-relabel-webhook"
+    geekdocRepo = "https://github.com/pdylanross/kube-resource-relabel-webhook/tree/main"
 
     # (Optional, default none) Enable 'Edit page' links. Requires 'geekdocRepo' param
     # and the path must point to the parent directory of the 'content' folder.

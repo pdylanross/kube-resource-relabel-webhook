@@ -45,5 +45,5 @@ doc-setup:
 	cd doc && $(MAKE) setup
 
 .PHONY: doc-serve
-doc-serve: doc-setup
-	cd doc && hugo serve
+doc-serve:
+	cd doc && $(MAKE) serve

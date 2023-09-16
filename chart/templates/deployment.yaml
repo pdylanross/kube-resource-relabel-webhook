@@ -11,10 +11,11 @@ spec:
       {{- include "chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        config-checksum: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "chart.selectorLabels" . | nindent 8 }}
     spec:
@@ -35,7 +36,7 @@ spec:
             - --metrics-enabled
             - --metrics-port={{ .Values.metrics.listener.port }}
             {{- end }}
-            {{- if .Values.admission.secret.enabled }}
+            {{- if or .Values.admission.secret.enabled .Values.admission.certManager.enabled }}
             - --webhook-tls-cert-file=/etc/relabel/certs/tls.crt
             - --webhook-tls-key-file=/etc/relabel/certs/tls.key
             {{- end }}
@@ -43,7 +44,7 @@ spec:
             - --log-level={{ .Values.log.level }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: https
@@ -59,12 +60,17 @@ spec:
               path: /livez
               port: https
               scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: /etc/relabel
-            {{- if .Values.admission.secret.enabled }}
+            {{- if or .Values.admission.secret.enabled .Values.admission.certManager.enabled }}
             - name: cert
               mountPath: /etc/relabel/certs
             {{- end }}
@@ -76,6 +82,10 @@ spec:
         - name: cert
           secret:
             secretName: {{ .Values.admission.secret.name }}
+        {{- else if .Values.admission.certManager.enabled }}
+        - name: cert
+          secret:
+            secretName: {{ include "chart.fullname" . }}-certificate
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

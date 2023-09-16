@@ -1,11 +1,52 @@
+# Relabel Config
+# Ex.
+# relabel:
+#   - name: "full-has-annotation"
+#     conditions:
+#     - type: has-annotation
+#       value:
+#         keys:
+#         - test1
+#         values:
+#         - test2
+#         match:
+#           thing: two
+#     actions:
+#     - type: ensure-annotation
+#       value:
+#         the-stuff: goes-here
 relabel: []
+
+
+# Admission Webhook Properties
 admission:
+  # Mutation and Admission webhooks require TLS
+  # and the webhook configuration needs to be informed of the CA bundle
+  # that the tls cert was signed with
+
+  # cert-manager integration
+  # Cert manager can manage the cert as well as inform the webhook of the bundle
+  # This route is much easier, if you're running cert-manager
   certManager:
+    # If cert-manager is enabled
     enabled: false
+    # Create and use a unique self-signed issuer
+    useSelfSigned: false
+    # use a pre-existing issuer
+    issuerName: ""
+
+  # Manage certs manually
   secret:
+    # If the secret based cert strategy is enabled
     enabled: false
+    # The CA Bundle the cert was signed with
     caBundle: ''
+    # The name of the secret
     name: ''
+
+  # Mutation webhook rules
+  # The webhook will only run when these rules are satisfied
+  # see: https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-rules
   rules:
     - operations:
         - CREATE
@@ -17,47 +58,94 @@ admission:
       resources:
         - pods
   namespaceSelector: nil
+
+# Logging config
 log:
+  # Log format - text or json
   format: text
+  # Log level - debug, info, warn, or error
   level: debug
+
+# Deployment Replica Count
 replicaCount: 3
+
+# Deployment Image
 image:
   repository: ghcr.io/pdylanross/kube-resource-relabel-webhook
   pullPolicy: Always
-  tag: 0.2.5
+  tag: ""
+
+# Deployment Resources
 resources:
   requests:
     memory: 128Mi
     cpu: 100m
   limits:
     memory: 128Mi
+
+# Image Pull Secrets
 imagePullSecrets: []
+
+# Override Resource Name
 nameOverride: ''
 fullnameOverride: ''
+
+# Metrics
 metrics:
+  # If the metrics endpoint is enabled
   enabled: true
+
+  # Prometheus Operator Service Monitor config
   serviceMonitor:
+    # If the ServiceMonitor is enabled
     enabled: false
+    # Additional labels to place on the ServiceMonitor
     additionalLabels: {}
+
+  # Metrics endpoint listener options
   listener:
+    # metrics listen port
     port: 8001
     host: 0.0.0.0
+
+    # Metrics endpoint TLS options
     tls:
       enabled: false
       secretName: ''
       certManager:
         enabled: false
         issuerName: ''
+
+# Service Account
 serviceAccount:
   create: true
   annotations: {}
   name: ''
+
+# Extra Pod Annotations
 podAnnotations: {}
+
+# Pod Security Context
 podSecurityContext: {}
-securityContext: {}
+
+# Security Context
+securityContext:
+  runAsUser: 9001
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+  privileged: false
+  allowPrivilegeEscalation: false
+
+# Service
 service:
   type: ClusterIP
   port: 8443
+
+# Pod Node Selectors
 nodeSelector: {}
+
+# Tolerations
 tolerations: []
+
+# Affinity
 affinity: {}

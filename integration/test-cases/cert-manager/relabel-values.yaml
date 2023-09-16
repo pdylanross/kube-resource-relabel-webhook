@@ -1,0 +1,30 @@
+relabel:
+  - name: "airflow-k8s-pod-operator-do-not-evict"
+    conditions:
+      - type: has-label
+        value:
+          keys:
+            - dag_id
+    actions:
+      - type: ensure-annotation
+        value:
+          karpenter.sh/do-not-evict: "true"
+  - name: "cleanup-fluentd-labels"
+    conditions:
+      - type: has-annotation
+        value:
+          match:
+            fluentd.active: "true"
+    actions:
+      - type: ensure-label
+        value:
+          fluentd.active: "true"
+
+replicaCount: 1
+
+fullnameOverride: kube-resource-relabel-webhook
+
+admission:
+  certManager:
+    enabled: true
+    useSelfSigned: true

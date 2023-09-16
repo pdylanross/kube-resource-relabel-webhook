@@ -2,6 +2,10 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: {{ include "chart.fullname" . }}
+  {{- if .Values.admission.certManager.enabled }}
+  annotations:
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace}}/{{ include "chart.fullname" . }}
+  {{- end }}
 webhooks:
   - name: v1.kube-resource-relabel-webhook.dev
     admissionReviewVersions: ["v1beta1", "v1"]

@@ -12,11 +12,6 @@
   "extra-files": [
     {
       "type": "yaml",
-      "path": "chart/values.yaml",
-      "jsonpath": "$.image.tag"
-    },
-    {
-      "type": "yaml",
       "path": "chart/Chart.yaml",
       "jsonpath": "$.appVersion"
     },

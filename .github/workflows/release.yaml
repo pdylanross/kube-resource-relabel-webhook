@@ -55,6 +55,9 @@ jobs:
       - name: Setup Golang
         uses: ./main/.github/actions/setup-golang
 
+      - name: Setup Gomplate
+        run: go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@latest
+
       - name: Install Hugo
         uses: peaceiris/actions-hugo@v2
         with:

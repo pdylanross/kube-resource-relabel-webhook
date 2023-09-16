@@ -1,0 +1,27 @@
+{{- if .Values.admission.certManager.enabled }}
+{{- if .Values.admission.certManager.useSelfSigned }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "chart.fullname" . }}
+spec:
+  selfSigned: {}
+{{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "chart.fullname" . }}
+spec:
+  secretName: {{ include "chart.fullname" . }}-certificate
+  dnsNames:
+    - {{ include "chart.fullname" . }}.{{ .Release.Namespace }}
+    - {{ include "chart.fullname" . }}.{{ .Release.Namespace }}.svc
+  issuerRef:
+    {{- if .Values.admission.certManager.useSelfSigned }}
+    name: {{ include "chart.fullname" . }}
+    {{- else }}
+    name: {{ .Values.admission.certManager.issuerName }}
+    {{- end }}
+{{- end }}

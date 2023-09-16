@@ -26,19 +26,6 @@
 
 * dockerfile cache go mod correctly ([a68307b](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/a68307b44306e941c138c1cd0208b1a6add0b4a0))
 
-## [0.2.2](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.1...v0.2.2) (2023-09-14)
-
-
-### Bug Fixes
-
-* **ci:** fixed gitconfig for pages repo in release ([dfa5e83](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/dfa5e83c58bdd2566be4d9718fc777a1cb59dcf2))
-
-## [0.2.1](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.0...v0.2.1) (2023-09-14)
-
-
-### Bug Fixes
-
-* **ci:** simplified the release pipeline ([a4308b4](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/a4308b4ba64b2b0d0435a7659540e821fd3bd0d9))
 
 ## [0.2.0](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.3...v0.2.0) (2023-09-14)
 
@@ -47,19 +34,6 @@
 
 * added helm release ([410aba7](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/410aba7155bacb6bc10dbac93ce2b1f60f75e716))
 
-## [0.1.3](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.2...v0.1.3) (2023-09-09)
-
-
-### Bug Fixes
-
-* force a release ([b7e4a0f](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/b7e4a0f71d40b4f64e1f828f67fc4cbea477b1eb))
-
-## [0.1.2](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.1...v0.1.2) (2023-09-09)
-
-
-### Bug Fixes
-
-* use PAT with release please ([6745caa](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/6745caa1e359d7f696d2c65663a55760a72846c0))
 
 ## [0.1.1](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.1.0...v0.1.1) (2023-09-09)
 
