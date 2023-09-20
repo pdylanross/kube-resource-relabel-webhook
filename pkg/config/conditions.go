@@ -7,6 +7,7 @@ import (
 	conditions2 "github.com/pdylanross/kube-resource-relabel-webhook/pkg/services/relabel/conditions"
 )
 
+// GetConcrete deserializes the rule into a concrete ConditionConfig
 func (act *RelabelConfigRuleCondition) GetConcrete() (relabel.ConditionConfig, error) {
 	switch act.Type {
 	case "has-label":
@@ -15,6 +16,10 @@ func (act *RelabelConfigRuleCondition) GetConcrete() (relabel.ConditionConfig, e
 		return &ret, err
 	case "has-annotation":
 		var ret HasAnnotationCondition
+		err := act.Value.Decode(&ret)
+		return &ret, err
+	case "is-type":
+		var ret IsTypeCondition
 		err := act.Value.Decode(&ret)
 		return &ret, err
 	}
@@ -48,4 +53,18 @@ type HasAnnotationCondition struct {
 
 func (h *HasAnnotationCondition) ToCondition() relabel.Condition {
 	return conditions2.NewHasAnnotationCondition(h.Keys, h.Values, h.Match)
+}
+
+// IsTypeCondition checks if an object is of a specific type
+type IsTypeCondition struct {
+	// Group is the k8s api group to check against
+	Group string `yaml:"group,omitempty"`
+	// Version is the k8s api version to check against
+	Version string `yaml:"version,omitempty"`
+	// Kind is the k8s api kind to check against
+	Kind string `yaml:"kind,omitempty"`
+}
+
+func (i *IsTypeCondition) ToCondition() relabel.Condition {
+	return conditions2.NewIsTypeCondition(i.Group, i.Version, i.Kind)
 }

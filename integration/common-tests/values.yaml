@@ -1,6 +1,10 @@
 relabel:
   - name: "airflow-k8s-pod-operator-do-not-evict"
     conditions:
+      - type: is-type
+        value:
+          kind: pod
+          version: v1
       - type: has-label
         value:
           keys:
@@ -11,6 +15,10 @@ relabel:
           karpenter.sh/do-not-evict: "true"
   - name: "cleanup-fluentd-labels"
     conditions:
+      - type: is-type
+        value:
+          kind: pod
+          version: v1
       - type: has-annotation
         value:
           match:
@@ -21,6 +29,10 @@ relabel:
           fluentd.active: "true"
   - name: "add-test2-label"
     conditions:
+      - type: is-type
+        value:
+          kind: pod
+          version: v1
       - type: has-annotation
         value:
           keys:

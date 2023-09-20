@@ -1,6 +1,10 @@
 relabel:
   - name: "airflow-k8s-pod-operator-do-not-evict"
     conditions:
+      - type: is-type
+        value:
+          version: v1
+          kind: pod
       - type: has-label
         value:
           keys:
