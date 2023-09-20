@@ -66,7 +66,7 @@ func (itf *IntegrationTestFixture) Start() {
 	slog.Info("starting kind cluster", slog.String("name", itf.kindClusterName))
 	output, err := itf.RunCommand("kind", "create", "cluster", "--config", kindConfig, "--kubeconfig", itf.kubeconfig, "--name", itf.kindClusterName)
 	if err != nil {
-		itf.t.Errorf("error creating test cluster: %s \n %s", err, output)
+		itf.t.Fatalf("error creating test cluster: %s \n %s", err, output)
 	}
 
 	slog.Info("loading container images")
@@ -80,7 +80,7 @@ func (itf *IntegrationTestFixture) Start() {
 		fmt.Sprintf("%s:%s", itf.currentImageRepo, itf.currentImageTag))
 
 	if err != nil {
-		itf.t.Errorf("could not load current relabel container to kind: %s \n %s", err.Error(), kindLoadOutput)
+		itf.t.Fatalf("could not load current relabel container to kind: %s \n %s", err.Error(), kindLoadOutput)
 	}
 }
 
@@ -117,7 +117,7 @@ func (itf *IntegrationTestFixture) LoadTestFile(relPath string) []byte {
 
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
-		itf.t.Errorf("Could not load test file: %s", err)
+		itf.t.Fatalf("Could not load test file: %s", err)
 	}
 
 	return data
@@ -126,12 +126,12 @@ func (itf *IntegrationTestFixture) LoadTestFile(relPath string) []byte {
 func (itf *IntegrationTestFixture) GetKubernetesClient() *kubernetes.Clientset {
 	config, err := clientcmd.BuildConfigFromFlags("", itf.kubeconfig)
 	if err != nil {
-		itf.t.Errorf("error getting kubeconfig %s", err)
+		itf.t.Fatalf("error getting kubeconfig %s", err)
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		itf.t.Errorf("error building kubernetes client %s", err)
+		itf.t.Fatalf("error building kubernetes client %s", err)
 	}
 
 	return clientset

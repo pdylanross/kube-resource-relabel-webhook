@@ -25,7 +25,12 @@ func (m *Mutator) Mutate(req AdmissionReview) {
 		return
 	}
 
-	patchOps := m.rules.Evaluate(obj)
+	patchOps, err := m.rules.Evaluate(req.GetRawObject(), obj)
+	if err != nil {
+		req.SetError(err)
+		return
+	}
+
 	if len(patchOps) > 0 {
 		if err := req.SetPatches(patchOps); err != nil {
 			req.SetError(err)

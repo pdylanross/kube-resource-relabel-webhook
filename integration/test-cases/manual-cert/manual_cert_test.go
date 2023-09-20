@@ -31,4 +31,8 @@ func TestManualCert(t *testing.T) {
 	fixture.HelmInstallRelabel([]string{"./integration/test-cases/manual-cert/relabel-values.yaml", common_tests.CommonValuesFile})
 
 	common_tests.RunCommonTests(t, kubeClientset)
+
+	if t.Failed() {
+		fixture.GetLogsForPodsByLabel("default", "app.kubernetes.io/name=kube-resource-relabel-webhook", kubeClientset)
+	}
 }

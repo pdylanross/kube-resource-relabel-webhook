@@ -1,5 +1,3 @@
-replicaCount: 1
-
 admission:
   secret:
     enabled: true

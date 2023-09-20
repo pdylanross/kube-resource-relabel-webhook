@@ -35,7 +35,7 @@ unit-test: # Run unit tests
 .PHONY: integration-test
 integration-test: build # Run integration tests
 	go clean -testcache
-	go test ./... --tags=integration_tests -v
+	go test ./... --tags=integration_tests -v -p=1
 
 .PHONY: pre-commit
 pre-commit: fix-check unit-test # Run all standard cleanups before a commit

@@ -26,6 +26,7 @@ func init() {
 
 type AdmissionReview interface {
 	GetObject() (metaV1.Object, error)
+	GetRawObject() []byte
 	SetError(err error)
 	ToSerializeable() interface{}
 	SetPatches(patches []jsonpatch.Operation) error
@@ -55,6 +56,10 @@ func NewAdmissionReview(body []byte) (AdmissionReview, error) {
 type admissionReviewV1 struct {
 	original *admissionv1.AdmissionReview
 	response *admissionv1.AdmissionResponse
+}
+
+func (a *admissionReviewV1) GetRawObject() []byte {
+	return a.original.Request.Object.Raw
 }
 
 func (a *admissionReviewV1) GetStatus() int {
@@ -120,6 +125,10 @@ func (a *admissionReviewV1) ToSerializeable() interface{} {
 type admissionReviewV1Beta1 struct {
 	original *admissionv1beta1.AdmissionReview
 	response *admissionv1beta1.AdmissionResponse
+}
+
+func (a *admissionReviewV1Beta1) GetRawObject() []byte {
+	return a.original.Request.Object.Raw
 }
 
 func (a *admissionReviewV1Beta1) GetStatus() int {

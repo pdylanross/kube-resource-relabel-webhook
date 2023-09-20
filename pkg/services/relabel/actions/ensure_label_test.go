@@ -38,12 +38,13 @@ func TestEnsureLabelAction_UpdateAddsNewField(t *testing.T) {
 		},
 	}
 
-	results := action.Update(pod)
+	action.Update(pod)
 
-	assert.Equal(t, 1, len(results))
-	assert.Equal(t, "/metadata/labels/test", results[0].Path)
-	assert.Equal(t, "add", results[0].Operation)
-	assert.Equal(t, "value", results[0].Value)
+	expected := map[string]string{
+		"test":     "value",
+		"existing": "shouldbeuntouched",
+	}
+	assert.Equal(t, expected, pod.GetLabels())
 }
 
 func TestEnsureLabelAction_UpdateAddsNewField_PriorBlank(t *testing.T) {
@@ -64,10 +65,10 @@ func TestEnsureLabelAction_UpdateAddsNewField_PriorBlank(t *testing.T) {
 		},
 	}
 
-	results := action.Update(pod)
+	action.Update(pod)
 
-	assert.Equal(t, 1, len(results))
-	assert.Equal(t, "/metadata/labels", results[0].Path)
-	assert.Equal(t, "add", results[0].Operation)
-	assert.Equal(t, labels, results[0].Value)
+	expected := map[string]string{
+		"test": "value",
+	}
+	assert.Equal(t, expected, pod.GetLabels())
 }

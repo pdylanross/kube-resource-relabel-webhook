@@ -1,6 +1,8 @@
 package relabel
 
 import (
+	"encoding/json"
+	"fmt"
 	"log/slog"
 
 	"gomodules.xyz/jsonpatch/v3"
@@ -10,7 +12,7 @@ import (
 // Relabeler is the main entrypoint into the relabeling process
 // it keeps a runtime optimized set of rules to relabel objects.
 type Relabeler interface {
-	Evaluate(obj metaV1.Object) []jsonpatch.Operation
+	Evaluate(originalRawObject []byte, obj metaV1.Object) ([]jsonpatch.Operation, error)
 }
 
 func NewRelabeler(rules []Rule) Relabeler {
@@ -24,12 +26,25 @@ type relabeler struct {
 
 // Evaluate a k8s object against the current ruleset
 // returning if the object was modified.
-func (r *relabeler) Evaluate(obj metaV1.Object) []jsonpatch.Operation {
-	var operations []jsonpatch.Operation
+func (r *relabeler) Evaluate(originalRawObject []byte, obj metaV1.Object) ([]jsonpatch.Operation, error) {
+	changed := false
 	for _, rule := range r.rules {
-		newOps := rule.Evaluate(obj, r.logger)
-		operations = append(operations, newOps...)
+		changed = rule.Evaluate(obj, r.logger) || changed
 	}
 
-	return operations
+	if !changed {
+		return []jsonpatch.Operation{}, nil
+	}
+
+	modifiedJSON, err := json.Marshal(obj)
+	if err != nil {
+		return nil, fmt.Errorf("error serializing modified object: %s", err.Error())
+	}
+
+	patch, err := jsonpatch.CreatePatch(originalRawObject, modifiedJSON)
+	if err != nil {
+		return nil, fmt.Errorf("error creating patch: %s", err.Error())
+	}
+
+	return patch, nil
 }

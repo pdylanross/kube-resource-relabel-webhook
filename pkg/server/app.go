@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -68,6 +69,11 @@ func (k *kubeRelabelApp) buildMutator(logger *slog.Logger) (*mutation.Mutator, e
 	buf, err := os.ReadFile(k.config.RelabelConfigFile)
 	if err != nil {
 		return nil, fmt.Errorf("err reading relabel config %w", err)
+	}
+
+	if logger.Enabled(context.Background(), slog.LevelDebug) {
+		logger.Debug("loaded relabel config")
+		println(string(buf))
 	}
 
 	var cfg config.RelabelConfig

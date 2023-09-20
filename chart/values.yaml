@@ -57,7 +57,7 @@ admission:
         - v1
       resources:
         - pods
-  namespaceSelector: nil
+  namespaceSelector: null
 
 # Logging config
 log:

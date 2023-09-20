@@ -3,7 +3,6 @@ package relabel
 import (
 	"log/slog"
 
-	"gomodules.xyz/jsonpatch/v3"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -20,7 +19,7 @@ type ConditionConfig interface {
 
 // Action applies a change to an object.
 type Action interface {
-	Update(obj metaV1.Object) []jsonpatch.Operation
+	Update(obj metaV1.Object)
 }
 
 // ActionConfig is a config object that can construct an action.
@@ -37,8 +36,6 @@ type Rule struct {
 }
 
 func NewRelabelRule(name string, conditions []Condition, actions []Action) *Rule {
-	actions = addImplicitActions(actions)
-
 	return &Rule{
 		name:       name,
 		actions:    actions,
@@ -46,13 +43,9 @@ func NewRelabelRule(name string, conditions []Condition, actions []Action) *Rule
 	}
 }
 
-func addImplicitActions(source []Action) []Action {
-	return source
-}
-
 // Evaluate a k8s object against this rule
 // return if the object was modified.
-func (r *Rule) Evaluate(obj metaV1.Object, logger *slog.Logger) []jsonpatch.Operation {
+func (r *Rule) Evaluate(obj metaV1.Object, logger *slog.Logger) bool {
 	l := logger.With(slog.String("rule-name", r.name),
 		slog.String("namespace", obj.GetNamespace()),
 		slog.String("name", obj.GetName()))
@@ -62,17 +55,14 @@ func (r *Rule) Evaluate(obj metaV1.Object, logger *slog.Logger) []jsonpatch.Oper
 	for _, c := range r.conditions {
 		if !c.Satisfies(obj) {
 			l.Debug("object didn't satisfy preconditions")
-			return []jsonpatch.Operation{}
+			return false
 		}
 	}
 
-	var operations []jsonpatch.Operation
-
+	l.Debug("updating object")
 	for _, a := range r.actions {
-		newPatches := a.Update(obj)
-		operations = append(operations, newPatches...)
+		a.Update(obj)
 	}
 
-	l.Debug("obj pending changes", slog.Int("num-changes", len(operations)))
-	return operations
+	return true
 }

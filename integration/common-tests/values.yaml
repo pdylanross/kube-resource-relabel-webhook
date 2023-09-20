@@ -19,3 +19,16 @@ relabel:
       - type: ensure-label
         value:
           fluentd.active: "true"
+  - name: "add-test2-label"
+    conditions:
+      - type: has-annotation
+        value:
+          keys:
+            - test2
+    actions:
+      - type: ensure-label
+        value:
+          test2: "value"
+
+replicaCount: 1
+fullnameOverride: kube-resource-relabel-webhook

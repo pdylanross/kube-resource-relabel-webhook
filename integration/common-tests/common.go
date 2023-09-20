@@ -15,8 +15,14 @@ import (
 )
 
 var CommonValuesFile = "./integration/common-tests/values.yaml"
+var TestNamespace = "common-tests"
 
 func RunCommonTests(t *testing.T, clientset *kubernetes.Clientset) {
+	_, err := clientset.CoreV1().Namespaces().Create(context.Background(), &corev1.Namespace{
+		ObjectMeta: metaV1.ObjectMeta{Name: TestNamespace},
+	}, metaV1.CreateOptions{})
+	require.Nil(t, err)
+
 	tests := map[string]func(clientset *kubernetes.Clientset, t2 *testing.T){
 		"Common_NoMatch_NoChange":                                              Common_NoMatch_NoChange,
 		"Common_DagMatch_NoAnnotations_AnnotationsAdded":                       Common_DagMatch_NoAnnotations_AnnotationsAdded,
@@ -27,6 +33,7 @@ func RunCommonTests(t *testing.T, clientset *kubernetes.Clientset) {
 		"Common_FluentdMatch_ExistingLabels_LabelsUpdated":                     Common_FluentdMatch_ExistingLabels_LabelsUpdated,
 		"Common_FluentdMatch_ExistingLabelsWrongValue_LabelsUpdated":           Common_FluentdMatch_ExistingLabelsWrongValue_LabelsUpdated,
 		"Common_FluentdMatch_ExistingLabelsExactMatch_NoChange":                Common_FluentdMatch_ExistingLabelsExactMatch_NoChange,
+		"Common_FluentdMatch_NoLabels_MultiMatch":                              Common_FluentdMatch_NoLabels_MultiMatch,
 	}
 
 	for name, f := range tests {
@@ -39,22 +46,25 @@ func RunCommonTests(t *testing.T, clientset *kubernetes.Clientset) {
 func Common_NoMatch_NoChange(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "no-match-no-change",
+			Name:      "no-match-no-change",
+			Namespace: TestNamespace,
 		},
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 0, len(result.Annotations))
-	assert.Equal(t, 0, len(result.Labels))
+	assert.Nil(t, result.Annotations)
+
+	assert.Nil(t, result.Labels)
 }
 
 func Common_DagMatch_NoAnnotations_AnnotationsAdded(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-noannotations-annotationsadded",
+			Name:      "dagmatch-noannotations-annotationsadded",
+			Namespace: TestNamespace,
 			Labels: map[string]string{
 				"dag_id": "is-dag",
 			},
@@ -62,19 +72,23 @@ func Common_DagMatch_NoAnnotations_AnnotationsAdded(clientset *kubernetes.Client
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 1, len(result.Annotations))
-	assert.Equal(t, 1, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"karpenter.sh/do-not-evict": "true",
+	}, result.Annotations)
 
-	assert.Equal(t, "true", result.Annotations["karpenter.sh/do-not-evict"])
+	assert.Equal(t, map[string]string{
+		"dag_id": "is-dag",
+	}, result.Labels)
 }
 
 func Common_DagMatch_ExistingAnnotations_AnnotationsUpdated(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-update-value-keep-old",
+			Name:      "dagmatch-update-value-keep-old",
+			Namespace: TestNamespace,
 			Labels: map[string]string{
 				"dag_id": "is-dag",
 			},
@@ -85,20 +99,24 @@ func Common_DagMatch_ExistingAnnotations_AnnotationsUpdated(clientset *kubernete
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 2, len(result.Annotations))
-	assert.Equal(t, 1, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"karpenter.sh/do-not-evict": "true",
+		"other-thing":               "false",
+	}, result.Annotations)
 
-	assert.Equal(t, "false", result.Annotations["other-thing"])
-	assert.Equal(t, "true", result.Annotations["karpenter.sh/do-not-evict"])
+	assert.Equal(t, map[string]string{
+		"dag_id": "is-dag",
+	}, result.Labels)
 }
 
 func Common_DagMatch_ExistingAnnotationsDifferentValue_AnnotationsUpdated(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-update-valueinplace",
+			Name:      "dagmatch-update-valueinplace",
+			Namespace: TestNamespace,
 			Labels: map[string]string{
 				"dag_id": "is-dag",
 			},
@@ -109,19 +127,23 @@ func Common_DagMatch_ExistingAnnotationsDifferentValue_AnnotationsUpdated(client
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 1, len(result.Annotations))
-	assert.Equal(t, 1, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"karpenter.sh/do-not-evict": "true",
+	}, result.Annotations)
 
-	assert.Equal(t, "true", result.Annotations["karpenter.sh/do-not-evict"])
+	assert.Equal(t, map[string]string{
+		"dag_id": "is-dag",
+	}, result.Labels)
 }
 
 func Common_DagMatch_ExistingAnnotationsExactMatch_NoChange(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-alreadycorrectannotations-nochange",
+			Name:      "dagmatch-alreadycorrectannotations-nochange",
+			Namespace: TestNamespace,
 			Labels: map[string]string{
 				"dag_id": "is-dag",
 			},
@@ -132,11 +154,16 @@ func Common_DagMatch_ExistingAnnotationsExactMatch_NoChange(clientset *kubernete
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 1, len(result.Annotations))
-	assert.Equal(t, 1, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"karpenter.sh/do-not-evict": "true",
+	}, result.Annotations)
+
+	assert.Equal(t, map[string]string{
+		"dag_id": "is-dag",
+	}, result.Labels)
 
 	assert.Equal(t, "true", result.Annotations["karpenter.sh/do-not-evict"])
 }
@@ -144,7 +171,8 @@ func Common_DagMatch_ExistingAnnotationsExactMatch_NoChange(clientset *kubernete
 func Common_FluentdMatch_NoLabels_LabelsAdded(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-nolabels-labelsadded",
+			Name:      "fluentdmatch-nolabels-labelsadded",
+			Namespace: TestNamespace,
 			Annotations: map[string]string{
 				"fluentd.active": "true",
 			},
@@ -152,19 +180,52 @@ func Common_FluentdMatch_NoLabels_LabelsAdded(clientset *kubernetes.Clientset, t
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 1, len(result.Annotations))
-	assert.Equal(t, 1, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+	}, result.Annotations)
+
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+	}, result.Labels)
 
 	assert.Equal(t, "true", result.Labels["fluentd.active"])
+}
+
+func Common_FluentdMatch_NoLabels_MultiMatch(clientset *kubernetes.Clientset, t *testing.T) {
+	pod := corev1.Pod{
+		ObjectMeta: metaV1.ObjectMeta{
+			Name:      "fluentdmatch-nolabels-labelsadded-multi",
+			Namespace: TestNamespace,
+			Annotations: map[string]string{
+				"fluentd.active": "true",
+				"test2":          "value",
+			},
+		},
+		Spec: *util.SleepPodSpec.DeepCopy(),
+	}
+
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
+	require.NoError(t, err, "error creating test pod")
+
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+		"test2":          "value",
+	}, result.Annotations)
+
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+		"test2":          "value",
+	}, result.Labels)
 }
 
 func Common_FluentdMatch_ExistingLabels_LabelsUpdated(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-existinglabels-labelsupdated",
+			Name:      "fluentdmatch-existinglabels-labelsupdated",
+			Namespace: TestNamespace,
 			Labels: map[string]string{
 				"other-thing": "yes",
 			},
@@ -175,20 +236,24 @@ func Common_FluentdMatch_ExistingLabels_LabelsUpdated(clientset *kubernetes.Clie
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 1, len(result.Annotations))
-	assert.Equal(t, 2, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+	}, result.Annotations)
 
-	assert.Equal(t, "true", result.Labels["fluentd.active"])
-	assert.Equal(t, "yes", result.Labels["other-thing"])
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+		"other-thing":    "yes",
+	}, result.Labels)
 }
 
 func Common_FluentdMatch_ExistingLabelsWrongValue_LabelsUpdated(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-existinglabelswrongvalue-labelsupdated",
+			Name:      "fluentdmatch-existinglabelswrongvalue-labelsupdated",
+			Namespace: TestNamespace,
 			Labels: map[string]string{
 				"fluentd.active": "false",
 			},
@@ -199,19 +264,23 @@ func Common_FluentdMatch_ExistingLabelsWrongValue_LabelsUpdated(clientset *kuber
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 1, len(result.Annotations))
-	assert.Equal(t, 1, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+	}, result.Annotations)
 
-	assert.Equal(t, "true", result.Labels["fluentd.active"])
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+	}, result.Labels)
 }
 
 func Common_FluentdMatch_ExistingLabelsExactMatch_NoChange(clientset *kubernetes.Clientset, t *testing.T) {
 	pod := corev1.Pod{
 		ObjectMeta: metaV1.ObjectMeta{
-			Name: "dagmatch-existinglabelsexactmatch-nochange",
+			Name:      "fluentdmatch-existinglabelsexactmatch-nochange",
+			Namespace: TestNamespace,
 			Labels: map[string]string{
 				"fluentd.active": "true",
 			},
@@ -222,11 +291,14 @@ func Common_FluentdMatch_ExistingLabelsExactMatch_NoChange(clientset *kubernetes
 		Spec: *util.SleepPodSpec.DeepCopy(),
 	}
 
-	result, err := clientset.CoreV1().Pods("default").Create(context.Background(), &pod, metaV1.CreateOptions{})
+	result, err := clientset.CoreV1().Pods(TestNamespace).Create(context.Background(), &pod, metaV1.CreateOptions{FieldValidation: "Strict"})
 	require.NoError(t, err, "error creating test pod")
 
-	assert.Equal(t, 1, len(result.Annotations))
-	assert.Equal(t, 1, len(result.Labels))
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+	}, result.Annotations)
 
-	assert.Equal(t, "true", result.Labels["fluentd.active"])
+	assert.Equal(t, map[string]string{
+		"fluentd.active": "true",
+	}, result.Labels)
 }

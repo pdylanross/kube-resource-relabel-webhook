@@ -39,12 +39,13 @@ func TestEnsureAnnotationAction_UpdateAddsNewField(t *testing.T) {
 		},
 	}
 
-	results := action.Update(pod)
+	action.Update(pod)
 
-	assert.Equal(t, 1, len(results))
-	assert.Equal(t, "/metadata/annotations/test", results[0].Path)
-	assert.Equal(t, "add", results[0].Operation)
-	assert.Equal(t, "value", results[0].Value)
+	expected := map[string]string{
+		"test":     "value",
+		"existing": "shouldbeuntouched",
+	}
+	assert.Equal(t, expected, pod.GetAnnotations())
 }
 
 func TestEnsureAnnotationAction_UpdateAddsNewField_PriorBlank(t *testing.T) {
@@ -65,10 +66,10 @@ func TestEnsureAnnotationAction_UpdateAddsNewField_PriorBlank(t *testing.T) {
 		},
 	}
 
-	results := action.Update(pod)
+	action.Update(pod)
 
-	assert.Equal(t, 1, len(results))
-	assert.Equal(t, "/metadata/annotations", results[0].Path)
-	assert.Equal(t, "add", results[0].Operation)
-	assert.Equal(t, annotations, results[0].Value)
+	expected := map[string]string{
+		"test": "value",
+	}
+	assert.Equal(t, expected, pod.GetAnnotations())
 }

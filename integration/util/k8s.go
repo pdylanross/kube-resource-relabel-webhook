@@ -3,10 +3,15 @@
 package util
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log/slog"
+	"strings"
 	"time"
+
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/cenkalti/backoff/v4"
 
@@ -25,7 +30,7 @@ func (itf *IntegrationTestFixture) LoadSecret(relPath string) *corev1.Secret {
 
 	_, _, err := universalDeserializer.Decode(file, nil, &secret)
 	if err != nil {
-		itf.t.Errorf("could not load secret from file %s: %s", relPath, err.Error())
+		itf.t.Fatalf("could not load secret from file %s: %s", relPath, err.Error())
 	}
 
 	return &secret
@@ -58,7 +63,7 @@ func (itf *IntegrationTestFixture) HelmInstallRelabel(relValuesFiles []string) {
 	output, err := itf.RunCommand("helm", args...)
 
 	if err != nil {
-		itf.t.Errorf("could not install helm chart: %s \n output: %s", err.Error(), output)
+		itf.t.Fatalf("could not install helm chart: %s \n output: %s", err.Error(), output)
 	}
 
 	itf.WaitForDeploymentReady("kube-resource-relabel-webhook", "default")
@@ -78,18 +83,18 @@ func (itf *IntegrationTestFixture) WaitForDeploymentReady(name string, namespace
 	clientset := itf.GetKubernetesClient()
 	getter := clientset.AppsV1().Deployments(namespace)
 	exp := backoff.NewExponentialBackOff()
-	exp.MaxElapsedTime = 1 * time.Minute
+	exp.MaxElapsedTime = 2 * time.Minute
 	exp.MaxInterval = 10 * time.Second
 
 	deployment, err := getter.Get(context.Background(), name, metaV1.GetOptions{})
 	if err != nil {
-		itf.t.Errorf("error getting deployment %s in namespace %s: %s", name, namespace, err.Error())
+		itf.t.Fatalf("error getting deployment %s in namespace %s: %s", name, namespace, err.Error())
 	}
 
 	for {
 		next := exp.NextBackOff()
 		if next == exp.Stop {
-			itf.t.Errorf("timed out waiting for deployment %s readiness", name)
+			itf.t.Fatalf("timed out waiting for deployment %s readiness", name)
 		}
 
 		time.Sleep(next)
@@ -101,8 +106,48 @@ func (itf *IntegrationTestFixture) WaitForDeploymentReady(name string, namespace
 
 		deployment, err = getter.Get(context.Background(), name, metaV1.GetOptions{})
 		if err != nil {
-			itf.t.Errorf("error getting deployment %s in namespace %s: %s", name, namespace, err.Error())
+			itf.t.Fatalf("error getting deployment %s in namespace %s: %s", name, namespace, err.Error())
 		}
+	}
+}
+
+func (itf *IntegrationTestFixture) GetLogsForPodsByLabel(namespace string, selector string, clientset *kubernetes.Clientset) {
+	pods, err := clientset.CoreV1().Pods(namespace).List(context.Background(), metaV1.ListOptions{
+		LabelSelector: selector,
+	})
+
+	if err != nil {
+		slog.Info("error fetching pods for debug pod dump: %s", slog.String("error", err.Error()))
+		return
+	}
+
+	for _, pod := range pods.Items {
+		itf.GetLogsForPod(namespace, pod.Name, clientset)
+	}
+}
+
+func (itf *IntegrationTestFixture) GetLogsForPod(namespace string, name string, clientset *kubernetes.Clientset) {
+	logsReq := clientset.CoreV1().Pods(namespace).GetLogs(name, &corev1.PodLogOptions{})
+	logs, err := logsReq.Stream(context.Background())
+	if err != nil {
+		slog.Info("error opening pod log stream", slog.String("pod", name), slog.String("error", err.Error()))
+		return
+	}
+
+	defer logs.Close()
+
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, logs)
+	if err != nil {
+		slog.Info("error copying logs to buf", slog.String("pod", name), slog.String("error", err.Error()))
+		return
+	}
+
+	logStr := buf.String()
+
+	slog.Info("pod logs: ", slog.String("pod", name))
+	for _, ln := range strings.Split(logStr, "\n") {
+		slog.Info(ln)
 	}
 }
 
