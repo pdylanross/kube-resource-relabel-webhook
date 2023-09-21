@@ -69,11 +69,29 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure Git
+      - name: Configure Git (pages)
         working-directory: ./pages
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Configure Git (main)
+        working-directory: ./main
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - uses: teaxyz/setup@v1
+        with:
+          +: gomplate.ca
+
+      - name: Setup Doc Site Deps
+        working-directory: ./main
+        run: make doc-setup
+
+      - name: Gen Docs
+        working-directory: ./main
+        run: make doc-gen
 
       - name: Setup Pages
         id: pages
@@ -89,16 +107,11 @@ jobs:
         run: |
           helm package ./main/chart -d ./pages/helm-charts
 
-
       - name: Setup helm index
         working-directory: ./pages/helm-charts
         run: |
           helm repo index --url https://pdylanross.github.io/kube-resource-relabel-webhook .
           cp -r . ../public/helm-charts
-
-      - name: Setup Doc Site Deps
-        working-directory: ./main
-        run: make doc-setup
 
       - name: Build Doc Site
         working-directory: ./main/doc
@@ -110,6 +123,12 @@ jobs:
           git add -A ./
           git commit -am "release: ${{ github.ref_name }}"
           git push
+
+      - name: Commit main repo
+        working-directory: ./main
+        run: |
+          git add -A ./
+          git commit -am "release: ${{ github.ref_name }}"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2

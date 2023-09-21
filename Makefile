@@ -41,11 +41,15 @@ integration-test: build # Run integration tests
 pre-commit: fix-check unit-test # Run all standard cleanups before a commit
 
 .PHONY: doc-setup
-doc-setup:
+doc-setup: # Fetch required deps for doc
 	cd doc && $(MAKE) setup
 
+.PHONY: doc-gen
+doc-gen: # Codegen doc
+	cd doc && $(MAKE) gen
+
 .PHONY: doc-serve
-doc-serve:
+doc-serve: # Serve doc pages locally
 	cd doc && $(MAKE) serve
 
 .PHONY: local-create-cluster

@@ -1,20 +1,5 @@
-# Relabel Config
-# Ex.
-# relabel:
-#   - name: "full-has-annotation"
-#     conditions:
-#     - type: has-annotation
-#       value:
-#         keys:
-#         - test1
-#         values:
-#         - test2
-#         match:
-#           thing: two
-#     actions:
-#     - type: ensure-annotation
-#       value:
-#         the-stuff: goes-here
+# -- Relabel Config
+# See: https://pdylanross.github.io/kube-resource-relabel-webhook/configuration/rules/
 relabel: []
 
 
@@ -28,25 +13,26 @@ admission:
   # Cert manager can manage the cert as well as inform the webhook of the bundle
   # This route is much easier, if you're running cert-manager
   certManager:
-    # If cert-manager is enabled
+    # -- If cert-manager is enabled
     enabled: false
-    # Create and use a unique self-signed issuer
+    # -- Create and use a unique self-signed issuer
     useSelfSigned: false
-    # use a pre-existing issuer
+    # -- use a pre-existing issuer
     issuerName: ""
 
   # Manage certs manually
   secret:
-    # If the secret based cert strategy is enabled
+    # -- If the secret based cert strategy is enabled
     enabled: false
-    # The CA Bundle the cert was signed with
+    # -- The CA Bundle the cert was signed with
     caBundle: ''
-    # The name of the secret
+    # -- The name of the secret
     name: ''
 
-  # Mutation webhook rules
+  # -- Mutation webhook rules
   # The webhook will only run when these rules are satisfied
   # see: https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-rules
+  # @default -- Create/Update on Pods
   rules:
     - operations:
         - CREATE
@@ -61,74 +47,89 @@ admission:
 
 # Logging config
 log:
-  # Log format - text or json
+  # -- Log format - text or json
   format: text
-  # Log level - debug, info, warn, or error
+  # -- Log level - debug, info, warn, or error
   level: debug
 
-# Deployment Replica Count
+# -- Deployment Replica Count
 replicaCount: 3
 
 # Deployment Image
 image:
+  # -- Image Repository
   repository: ghcr.io/pdylanross/kube-resource-relabel-webhook
-  pullPolicy: Always
+  # -- Image Pull Policy
+  pullPolicy: IfNotPresent
+  # -- Image tag, defaults to .Chart.AppVersion
   tag: ""
 
-# Deployment Resources
-resources:
-  requests:
-    memory: 128Mi
-    cpu: 100m
-  limits:
-    memory: 128Mi
+# -- Deployment Resources
+#  requests:
+#    memory: 128Mi
+#    cpu: 100m
+#  limits:
+#    memory: 128Mi
+resources: {}
 
-# Image Pull Secrets
+
+# -- Image Pull Secrets
 imagePullSecrets: []
 
-# Override Resource Name
+# -- Override Resource Name
 nameOverride: ''
+# -- Override full resource name
 fullnameOverride: ''
 
-# Metrics
+# Metrics Configs
 metrics:
-  # If the metrics endpoint is enabled
-  enabled: true
+  # -- If the metrics endpoint is enabled
+  enabled: false
 
   # Prometheus Operator Service Monitor config
   serviceMonitor:
-    # If the ServiceMonitor is enabled
+    # -- If the ServiceMonitor is enabled
     enabled: false
-    # Additional labels to place on the ServiceMonitor
+    # -- Additional labels to place on the ServiceMonitor
     additionalLabels: {}
 
   # Metrics endpoint listener options
   listener:
-    # metrics listen port
+    # -- metrics listen port
     port: 8001
+    # -- metrics listen host
     host: 0.0.0.0
 
     # Metrics endpoint TLS options
     tls:
+      # -- If tls is enabled on the metrics endpoint
       enabled: false
+      # -- the name of the TLS cert secret
       secretName: ''
+      # tls cert manager options
       certManager:
+        # -- if cert manager is enabled for the tls cert
         enabled: false
+        # -- the name of the cert manager issuer
         issuerName: ''
 
 # Service Account
 serviceAccount:
+  # -- if the service account should be created
   create: true
+  # -- extra annotation for the service account
   annotations: {}
+  # -- override name of the service account
   name: ''
 
-# Extra Pod Annotations
+# -- Extra Pod Annotations
 podAnnotations: {}
 
-# Pod Security Context
+# -- Pod Security Context
 podSecurityContext: {}
 
-# Security Context
+# -- Security Context
+# @default -- non-root user and restricted FS
 securityContext:
   runAsUser: 9001
   runAsNonRoot: true
@@ -138,14 +139,16 @@ securityContext:
 
 # Service
 service:
+  # -- Service Type
   type: ClusterIP
+  # -- webhook listen port
   port: 8443
 
-# Pod Node Selectors
+# -- Pod Node Selectors
 nodeSelector: {}
 
-# Tolerations
+# -- Tolerations
 tolerations: []
 
-# Affinity
+# -- Affinity
 affinity: {}

@@ -1,0 +1,45 @@
+---
+weight: 210
+title: "Helm Values"
+---
+
+{{ template "chart.description" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add kube-resource-relabel-webhook https://pdylanross.github.io/kube-resource-relabel-webhook/helm-charts
+$  helm repo update
+$ helm install my-release kube-resource-relabel-webhook/kube-resource-relabel-webhook
+```
+
+Any basic configuration is going to need some rules:
+```yaml
+relabel:
+  - name: "airflow-k8s-pod-operator-do-not-evict"
+    conditions:
+      - type: is-type
+        value:
+          kind: pod
+          version: v1
+      - type: has-label
+        value:
+          keys:
+            - dag_id
+    actions:
+      - type: ensure-annotation
+        value:
+          karpenter.sh/do-not-evict: "true"
+```
+
+## Values
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesTable" . }}
+
+{{ template "helm-docs.versionFooter" . }}
