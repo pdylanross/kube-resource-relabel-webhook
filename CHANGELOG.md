@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.5...v0.3.0) (2023-09-21)
+
+
+### Features
+
+* added cert-manager support ([c995df4](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/c995df416df91fb6112c6eaf98d303f8b3ed1b59))
+* added is-type condition ([09ee7c2](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/09ee7c2d0c9ec0f34686876971ac96eb8bbff870))
+* **doc:** fleshed out docs around helm & config ([df5a67f](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/df5a67f05a2afab567f40a987d1a71db2d00d08e))
+* **test:** added testing for ingress resources ([2110fdb](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/2110fdb8a990381cbb3282cae4cd08151ea4343f))
+
+
+### Bug Fixes
+
+* **integration-test:** add endpoint readiness gate ([7042069](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/70420690f173a71f31d9b227b1dca27b1185a8e2))
+* linter errors ([ed24dd1](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/ed24dd1c520657d53b5affdac607cc643086ac5e))
+* multiple patches overriding each other ([dcd476e](https://github.com/pdylanross/kube-resource-relabel-webhook/commit/dcd476ef31b0050d2460f4bc3bf27a352f16b3f9))
+
 ## [0.2.5](https://github.com/pdylanross/kube-resource-relabel-webhook/compare/v0.2.4...v0.2.5) (2023-09-15)
 
 
