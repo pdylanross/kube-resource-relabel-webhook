@@ -23,6 +23,8 @@ func TestCertManager(t *testing.T) {
 	fixture.WaitForDeploymentReady("cert-manager-webhook", "cert-manager")
 	fixture.WaitForDeploymentReady("cert-manager", "cert-manager")
 	fixture.WaitForDeploymentReady("cert-manager-cainjector", "cert-manager")
+	fixture.WaitForEndpointReady("cert-manager-webhook", "cert-manager")
+	fixture.WaitForEndpointReady("cert-manager", "cert-manager")
 
 	slog.Info("installing relabeler")
 	fixture.HelmInstallRelabel([]string{"./integration/test-cases/cert-manager/relabel-values.yaml", common_tests.CommonValuesFile})

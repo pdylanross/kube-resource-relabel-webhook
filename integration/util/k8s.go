@@ -67,6 +67,7 @@ func (itf *IntegrationTestFixture) HelmInstallRelabel(relValuesFiles []string) {
 	}
 
 	itf.WaitForDeploymentReady("kube-resource-relabel-webhook", "default")
+	itf.WaitForEndpointReady("kube-resource-relabel-webhook", "default")
 }
 
 func (itf *IntegrationTestFixture) RunKubectlCmd(args ...string) {
@@ -107,6 +108,38 @@ func (itf *IntegrationTestFixture) WaitForDeploymentReady(name string, namespace
 		deployment, err = getter.Get(context.Background(), name, metaV1.GetOptions{})
 		if err != nil {
 			itf.t.Fatalf("error getting deployment %s in namespace %s: %s", name, namespace, err.Error())
+		}
+	}
+}
+
+func (itf *IntegrationTestFixture) WaitForEndpointReady(name string, namespace string) {
+	clientset := itf.GetKubernetesClient()
+	getter := clientset.CoreV1().Endpoints(namespace)
+	exp := backoff.NewExponentialBackOff()
+	exp.MaxElapsedTime = 2 * time.Minute
+	exp.MaxInterval = 10 * time.Second
+
+	endpoints, err := getter.Get(context.Background(), name, metaV1.GetOptions{})
+	if err != nil {
+		itf.t.Fatalf("error getting endpoint %s in namespace %s: %s", name, namespace, err.Error())
+	}
+
+	for {
+		next := exp.NextBackOff()
+		if next == exp.Stop {
+			itf.t.Fatalf("timed out waiting for endpoint %s", name)
+		}
+
+		time.Sleep(next)
+		slog.Info("wait for endpoint", slog.String("name", name), slog.String("namespace", namespace))
+
+		if len(endpoints.Subsets) > 0 && len(endpoints.Subsets[0].Addresses) > 0 && len(endpoints.Subsets[0].NotReadyAddresses) == 0 {
+			return
+		}
+
+		endpoints, err = getter.Get(context.Background(), name, metaV1.GetOptions{})
+		if err != nil {
+			itf.t.Fatalf("error getting endpoint %s in namespace %s: %s", name, namespace, err.Error())
 		}
 	}
 }
