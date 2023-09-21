@@ -41,6 +41,38 @@ relabel:
       - type: ensure-label
         value:
           test2: "value"
+  - name: "nginx ingress ensure default backend"
+    conditions:
+      - type: is-type
+        value:
+          kind: ingress
+          version: v1
+          group: networking.k8s.io
+    actions:
+      - type: ensure-annotation
+        value:
+          nginx.ingress.kubernetes.io/default-backend: some-svc
 
 replicaCount: 1
 fullnameOverride: kube-resource-relabel-webhook
+
+admission:
+  rules:
+    - operations:
+        - CREATE
+        - UPDATE
+      apiGroups:
+        - ''
+      apiVersions:
+        - v1
+      resources:
+        - pods
+    - operations:
+        - CREATE
+        - UPDATE
+      apiGroups:
+        - 'networking.k8s.io'
+      apiVersions:
+        - v1
+      resources:
+        - ingresses

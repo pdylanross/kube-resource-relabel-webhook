@@ -48,7 +48,7 @@ func (itf *IntegrationTestFixture) HelmInstallRelabel(relValuesFiles []string) {
 		"--set",
 		fmt.Sprintf("image.repository=%s", itf.currentImageRepo),
 		"--set",
-		"image.pullPolicy=IfNotPresent",
+		"image.pullPolicy=Never",
 		"--set",
 		"fullnameOverride=kube-resource-relabel-webhook",
 		"--atomic",

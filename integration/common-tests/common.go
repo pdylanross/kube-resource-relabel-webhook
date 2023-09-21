@@ -6,6 +6,8 @@ import (
 	"context"
 	"testing"
 
+	networkingv1 "k8s.io/api/networking/v1"
+
 	"github.com/pdylanross/kube-resource-relabel-webhook/integration/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,6 +26,7 @@ func RunCommonTests(t *testing.T, clientset *kubernetes.Clientset) {
 	require.Nil(t, err)
 
 	tests := map[string]func(clientset *kubernetes.Clientset, t2 *testing.T){
+		// pod tests
 		"Common_NoMatch_NoChange":                                              Common_NoMatch_NoChange,
 		"Common_DagMatch_NoAnnotations_AnnotationsAdded":                       Common_DagMatch_NoAnnotations_AnnotationsAdded,
 		"Common_DagMatch_ExistingAnnotations_AnnotationsUpdated":               Common_DagMatch_ExistingAnnotations_AnnotationsUpdated,
@@ -34,6 +37,9 @@ func RunCommonTests(t *testing.T, clientset *kubernetes.Clientset) {
 		"Common_FluentdMatch_ExistingLabelsWrongValue_LabelsUpdated":           Common_FluentdMatch_ExistingLabelsWrongValue_LabelsUpdated,
 		"Common_FluentdMatch_ExistingLabelsExactMatch_NoChange":                Common_FluentdMatch_ExistingLabelsExactMatch_NoChange,
 		"Common_FluentdMatch_NoLabels_MultiMatch":                              Common_FluentdMatch_NoLabels_MultiMatch,
+
+		// ingress tests
+		"Common_IngressResource_AddsAnnotation": Common_IngressResource_AddsAnnotation,
 	}
 
 	for name, f := range tests {
@@ -301,4 +307,44 @@ func Common_FluentdMatch_ExistingLabelsExactMatch_NoChange(clientset *kubernetes
 	assert.Equal(t, map[string]string{
 		"fluentd.active": "true",
 	}, result.Labels)
+}
+
+func Common_IngressResource_AddsAnnotation(clientset *kubernetes.Clientset, t *testing.T) {
+	pathType := networkingv1.PathTypePrefix
+	ingress := networkingv1.Ingress{
+		ObjectMeta: metaV1.ObjectMeta{
+			Name:      "ingress-resource-add-annotation",
+			Namespace: TestNamespace,
+		},
+		Spec: networkingv1.IngressSpec{
+			Rules: []networkingv1.IngressRule{
+				{
+					Host: "test.example.com",
+					IngressRuleValue: networkingv1.IngressRuleValue{
+						HTTP: &networkingv1.HTTPIngressRuleValue{
+							Paths: []networkingv1.HTTPIngressPath{
+								{
+									Path:     "/",
+									PathType: &pathType,
+									Backend: networkingv1.IngressBackend{
+										Service: &networkingv1.IngressServiceBackend{
+											Name: "test",
+											Port: networkingv1.ServiceBackendPort{
+												Name: "http",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	results, err := clientset.NetworkingV1().Ingresses(TestNamespace).Create(context.Background(), &ingress, metaV1.CreateOptions{})
+	require.NoError(t, err)
+
+	assert.Equal(t, map[string]string{"nginx.ingress.kubernetes.io/default-backend": "some-svc"}, results.Annotations)
 }

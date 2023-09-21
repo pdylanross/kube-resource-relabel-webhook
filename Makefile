@@ -47,3 +47,35 @@ doc-setup:
 .PHONY: doc-serve
 doc-serve:
 	cd doc && $(MAKE) serve
+
+.PHONY: local-create-cluster
+local-create-cluster:
+	kind create cluster --config ./integration/kind-config.yaml --name test1
+
+.PHONY: local-load-image build
+local-load-image: build
+	kind load docker-image --name test1 relabel:dev
+
+.PHONY: local-install-relabel
+local-install-relabel: local-install-cert-manager local-load-image
+	helm upgrade -i relabel ./chart \
+		--set image.tag=dev \
+		--set image.repository=relabel \
+		--set image.pullPolicy=Never \
+		--set fullnameOverride=kube-resource-relabel-webhook \
+		--atomic \
+		-n default \
+		-f ./integration/common-tests/values.yaml \
+		-f ./integration/test-cases/cert-manager/relabel-values.yaml
+
+.PHONY: local-install-cert-manager
+local-install-cert-manager:
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+	kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager -n cert-manager
+
+.PHONY: local-setup
+local-setup: local-create-cluster local-install-cert-manager local-install-relabel # setup local dev cluster
+
+.PHONY: local-teardown
+local-teardown: # teardown local dev cluster
+	kind delete cluster --name test1
