@@ -81,7 +81,7 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - uses: teaxyz/setup@v1
+      - uses: teaxyz/setup@v2
         with:
           +: gomplate.ca
 
