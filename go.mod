@@ -5,7 +5,7 @@ go 1.21.0
 require (
 	github.com/Depado/ginprom v1.7.11
 	github.com/alecthomas/kong v0.8.1
-	github.com/cenkalti/backoff/v4 v4.2.1
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/dustinkirkland/golang-petname v0.0.0-20230626224747-e794b9370d49
 	github.com/gin-gonic/gin v1.9.1
 	github.com/oklog/run v1.1.0
